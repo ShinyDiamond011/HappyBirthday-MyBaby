@@ -185,144 +185,321 @@
     100%{ transform: translateY(-650px) translateX(var(--drift,20px)) rotate(25deg); opacity:0; }
   }
 
-  .section-title{ text-align:center; margin: 0 0 8px; font-size: clamp(1.6rem, 6vw, 2.1rem); }
-  .section-sub{ text-align:center; color: rgba(251,245,234,0.65); margin: 0 0 30px; font-size: 0.95rem; }
+  .section-title{ text-align:center; margin: 0 0 8px; font-size: clamp(1.8rem, 7vw, 2.4rem); }
+  .section-sub{ text-align:center; color: rgba(251,245,234,0.65); margin: 0 0 34px; font-size: 0.95rem; }
+  .title-flourish{ text-align:center; color: rgba(242,193,78,0.6); margin: -6px 0 18px; font-size: 1.1rem; letter-spacing: 4px; }
 
-  /* ---------- Reasons flip grid ---------- */
-  .reasons-grid{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; width: 100%; max-width: 560px; }
-  @media (min-width: 480px){ .reasons-grid{ grid-template-columns: repeat(3, 1fr); } }
-
-  .flip-card{ perspective: 900px; aspect-ratio: 1; cursor: pointer; }
-  .flip-inner{ position: relative; width:100%; height:100%; transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(.4,.2,.2,1); }
-  .flip-card.flipped .flip-inner{ transform: rotateY(180deg); }
-  .flip-face{ position:absolute; inset:0; backface-visibility: hidden; border-radius: 16px; display:flex; align-items:center; justify-content:center; padding: 12px; text-align:center; }
-  .flip-front{ background: linear-gradient(160deg, var(--blue), var(--navy)); border: 1px solid rgba(242,193,78,0.35); font-size: 1.6rem; }
-  .flip-front .num{ position:absolute; top:8px; left:10px; font-size:0.7rem; color: rgba(251,245,234,0.4); font-family: Georgia, serif; }
-  .flip-back{ background: linear-gradient(160deg, var(--sky), var(--blue)); transform: rotateY(180deg); font-size: 0.8rem; color: var(--navy-deep); font-weight: 600; line-height:1.35; }
-
-  /* ================= BOOK ================= */
-  .book-section{ perspective: 1600px; }
-  .book-wrap{ display:flex; justify-content:center; width:100%; }
-  .book{
-    position: relative; width: min(360px, 88vw); aspect-ratio: 3/4.1;
+  /* ---------- Reasons: swipeable stacked deck ---------- */
+  .stack-outer{ display:flex; flex-direction:column; align-items:center; gap: 22px; width:100%; }
+  .stack-glow{
+    position:absolute; width: 380px; height: 380px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(110,168,255,0.28), transparent 70%);
+    filter: blur(10px); z-index:0; pointer-events:none;
   }
-  .book-spine{
-    position:absolute; left:-6px; top: 3%; bottom: 3%; width: 14px;
-    background: linear-gradient(90deg, var(--navy), var(--blue) 60%, var(--navy));
-    border-radius: 6px 0 0 6px;
-    box-shadow: inset -3px 0 6px rgba(0,0,0,0.4);
+  .card-stack{
+    position: relative; z-index:1;
+    width: min(320px, 84vw); height: min(400px, 52vh);
+    touch-action: pan-y;
+  }
+  .stack-card{
+    position: absolute; inset: 0;
+    perspective: 1200px;
+    transition: transform 0.45s cubic-bezier(.22,.85,.32,1), opacity 0.4s ease;
+    cursor: grab;
+  }
+  .stack-card:active{ cursor: grabbing; }
+  .stack-flip-inner{
+    position: relative; width:100%; height:100%;
+    transform-style: preserve-3d;
+    transition: transform 0.55s cubic-bezier(.4,.2,.2,1);
+  }
+  .stack-card.flipped .stack-flip-inner{ transform: rotateY(180deg); }
+  .stack-face{
+    position:absolute; inset:0; backface-visibility: hidden;
+    border-radius: 26px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap: 14px; padding: 26px; text-align:center;
+    box-shadow: 0 24px 50px -18px rgba(0,0,0,0.6);
+  }
+  .stack-front{
+    background:
+      radial-gradient(120% 100% at 15% 0%, rgba(255,255,255,0.1), transparent 55%),
+      linear-gradient(160deg, var(--blue), var(--navy));
+    border: 1px solid rgba(242,193,78,0.3);
+  }
+  .stack-front .badge{
+    width: 54px; height: 54px; border-radius: 50%;
+    background: linear-gradient(160deg, var(--gold), #d99a2b);
+    color: var(--navy-deep); font-family: Georgia, serif; font-weight:700; font-size: 1.3rem;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .stack-front .heart{ font-size: 1.6rem; }
+  .stack-front .hint{ font-size: 0.78rem; color: rgba(251,245,234,0.55); position:absolute; bottom: 18px; }
+  .stack-back{
+    background: linear-gradient(160deg, var(--sky), var(--blue));
+    transform: rotateY(180deg);
+    font-size: 0.95rem; color: var(--navy-deep); font-weight: 600; line-height:1.4;
+    font-family: Georgia, serif;
+  }
+  .stack-controls{ display:flex; align-items:center; gap: 20px; z-index:1; }
+  .stack-controls button{
+    width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(110,168,255,0.4);
+    background: rgba(110,168,255,0.12); color: var(--cream); font-size: 1.2rem; cursor: pointer;
+  }
+  .stack-indicator{ font-size: 0.85rem; color: rgba(251,245,234,0.6); min-width: 50px; text-align:center; }
+  .stack-hint{ font-size: 0.78rem; color: rgba(251,245,234,0.4); }
+
+  /* ================= BOOK: real open two-page spread ================= */
+  .book-outer{ display:flex; flex-direction:column; align-items:center; gap: 18px; width:100%; }
+  .book-glow{
+    position:absolute; width: 520px; height: 460px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(110,168,255,0.22), transparent 70%);
+    filter: blur(14px); z-index:0; pointer-events:none;
+  }
+  .book{
+    position: relative; z-index: 1;
+    width: min(680px, 94vw); height: min(460px, 60vh);
+    perspective: 2600px;
+    display: flex;
+    border-radius: 10px;
+    box-shadow: 0 45px 90px -25px rgba(0,0,0,0.85);
+  }
+  .book-left, .book-right{
+    position: relative;
+    width: 50%; height: 100%;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(0,0,0,0.02) 0.6px, transparent 0.6px),
+      radial-gradient(circle at 70% 65%, rgba(0,0,0,0.015) 0.6px, transparent 0.6px),
+      repeating-linear-gradient(rgba(42,35,64,0.04) 0 1px, transparent 1px 30px),
+      var(--paper);
+    background-size: 7px 7px, 6px 6px, 100% 30px, 100% 100%;
+    color: var(--ink);
+    overflow: hidden;
+  }
+  .book-left{
+    border-radius: 10px 0 0 10px;
+    box-shadow: inset -18px 0 26px -20px rgba(0,0,0,0.5);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap: 14px;
+    padding: 20px;
+  }
+  .book-right{
+    border-radius: 0 10px 10px 0;
+    box-shadow: inset 18px 0 26px -20px rgba(0,0,0,0.5);
+  }
+  .left-deco svg{ width: 74px; height: 74px; opacity: 0.75; }
+  .left-deco .title{ font-family: Georgia, serif; font-size: 1.15rem; text-align:center; color: var(--ink); }
+  .left-deco .since{ font-size: 0.78rem; color: rgba(42,35,64,0.55); text-align:center; letter-spacing: 0.5px; }
+
+  .page-edges{
+    position:absolute; right: -4px; top: 2%; bottom: 2%; width: 8px;
+    background: repeating-linear-gradient(var(--paper-dark) 0 2px, var(--paper) 2px 4px);
+    border-radius: 0 5px 5px 0;
+    box-shadow: 1px 0 5px rgba(0,0,0,0.3);
+    z-index: 0;
   }
   .ribbon{
-    position:absolute; top:-4px; right: 34px; width: 20px; height: 46px;
+    position:absolute; top:-6px; right: 30px; width: 22px; height: 52px;
     background: linear-gradient(180deg, var(--blush), #d94f6d);
     clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
-    z-index: 5; filter: drop-shadow(0 6px 8px rgba(0,0,0,0.35));
+    z-index: 6; filter: drop-shadow(0 6px 8px rgba(0,0,0,0.35));
   }
   .book-cover{
-    position:absolute; inset:0; border-radius: 8px 14px 14px 8px;
+    position:absolute; inset:0; border-radius: 10px;
     background:
-      radial-gradient(140% 100% at 0% 0%, rgba(255,255,255,0.06), transparent 55%),
+      radial-gradient(140% 100% at 0% 0%, rgba(255,255,255,0.07), transparent 55%),
       linear-gradient(155deg, var(--blue) 0%, var(--navy) 100%);
-    box-shadow: 0 30px 70px -20px rgba(0,0,0,0.75), inset 0 0 0 1px rgba(242,193,78,0.25);
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
-    cursor: pointer; transition: transform 0.7s cubic-bezier(.5,0,.3,1), opacity 0.5s ease 0.2s;
-    padding: 20px; text-align:center; transform-origin: left center;
+    box-shadow: 0 35px 80px -20px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(242,193,78,0.25);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px;
+    cursor: pointer; transition: transform 0.8s cubic-bezier(.5,0,.3,1), opacity 0.5s ease 0.25s;
+    padding: 24px; text-align:center; transform-origin: left center;
+    z-index: 5;
   }
-  .book-cover.open{ transform: rotateY(-150deg); opacity:0; pointer-events:none; }
+  .book-cover::before{
+    content:''; position:absolute; inset: 16px;
+    border: 1px solid rgba(242,193,78,0.35); border-radius: 4px;
+    pointer-events:none;
+  }
+  .book-cover.open{ transform: rotateY(-155deg); opacity:0; pointer-events:none; }
   .seal{
-    width: 58px; height: 58px; border-radius: 50%;
+    width: 64px; height: 64px; border-radius: 50%;
     background: radial-gradient(circle at 35% 30%, var(--blush), #c23b58);
-    display:flex; align-items:center; justify-content:center; font-size: 1.4rem;
+    display:flex; align-items:center; justify-content:center; font-size: 1.6rem;
     box-shadow: 0 6px 14px rgba(0,0,0,0.4);
     animation: pulse 2.4s ease-in-out infinite;
   }
   @keyframes pulse{ 0%,100%{ transform: scale(1);} 50%{ transform: scale(1.06);} }
-  .book-cover .tap-note{ font-size: 0.8rem; color: rgba(251,245,234,0.7); }
+  .book-cover .tap-note{ font-size: 0.85rem; color: rgba(251,245,234,0.7); }
+  .book-cover h3{ margin: 0; font-size: 1.4rem; }
 
-  .book-pages{
-    position:absolute; inset:0; border-radius: 8px 14px 14px 8px;
+  .book-stage{
+    position:absolute; inset:0;
+    transform-style: preserve-3d;
+    opacity: 0; transition: opacity 0.4s ease;
+  }
+  .book-stage.show{ opacity: 1; }
+
+  .leaf{
+    position:absolute; inset:0;
+    transform-style: preserve-3d;
+    transform-origin: left center;
+    transition: transform 0.75s cubic-bezier(.65,0,.35,1);
+    will-change: transform;
+  }
+  .leaf-face{
+    position:absolute; inset:0; backface-visibility: hidden;
+    overflow: hidden;
+  }
+  .leaf-front{
     background:
-      repeating-linear-gradient(rgba(42,35,64,0.05) 0 1px, transparent 1px 28px),
+      radial-gradient(circle at 25% 30%, rgba(0,0,0,0.02) 0.6px, transparent 0.6px),
+      radial-gradient(circle at 75% 60%, rgba(0,0,0,0.015) 0.6px, transparent 0.6px),
+      repeating-linear-gradient(rgba(42,35,64,0.045) 0 1px, transparent 1px 30px),
       var(--paper);
+    background-size: 7px 7px, 6px 6px, 100% 30px, 100% 100%;
     color: var(--ink);
     display:flex; flex-direction:column;
-    opacity:0; pointer-events:none; transition: opacity 0.4s ease;
-    box-shadow: 0 30px 70px -20px rgba(0,0,0,0.75);
+    box-shadow: inset -16px 0 24px -20px rgba(0,0,0,0.4);
   }
-  .book-pages.show{ opacity:1; pointer-events:auto; }
-  .book-pages::after{
-    content:''; position:absolute; bottom:0; right:0; width:0; height:0;
-    border-style: solid; border-width: 0 0 34px 34px;
+  .leaf-front::after{
+    content: ''; position:absolute; inset:0; opacity: 0; pointer-events: none;
+    background: linear-gradient(90deg, rgba(0,0,0,0.55), transparent 55%);
+  }
+  .leaf.turning .leaf-front::after{ animation: turnShadow 0.75s ease forwards; }
+  @keyframes turnShadow{ 0%{ opacity:0; } 45%{ opacity: 0.5; } 100%{ opacity: 0; } }
+  .leaf-front::before{
+    content:''; position:absolute; right:0; bottom:0; width:0; height:0;
+    border-style: solid; border-width: 0 0 26px 26px;
     border-color: transparent transparent var(--paper-dark) transparent;
-    filter: drop-shadow(-2px -2px 3px rgba(0,0,0,0.15));
+    filter: drop-shadow(-1px -1px 2px rgba(0,0,0,0.15));
+  }
+  .leaf-back{
+    background: var(--paper-dark);
+    transform: rotateY(180deg);
   }
 
-  .page-flip{ transform: rotateY(0deg); transition: transform 0.42s ease, opacity 0.42s ease; transform-origin: left center; flex:1; display:flex; flex-direction:column; }
-  .page-flip.turning{ transform: rotateY(-85deg); opacity: 0.3; }
-
-  .page-num{ text-align:center; font-size: 0.72rem; color: rgba(42,35,64,0.5); padding: 16px 0 4px; letter-spacing: 1px; }
-  .page-body{ flex: 1; padding: 6px 26px 6px; overflow-y:auto; display:flex; flex-direction:column; justify-content:center; }
-  .page-body.text-page{ font-family: Georgia, serif; font-size: 0.98rem; line-height: 1.7; white-space: pre-wrap; }
+  .page-meta{ display:flex; justify-content:space-between; align-items:baseline; padding: 16px 24px 0; font-size: 0.68rem; color: rgba(42,35,64,0.45); letter-spacing: 1px; }
+  .page-body{ flex: 1; padding: 8px 24px; overflow-y:auto; display:flex; flex-direction:column; justify-content:center; }
+  .page-body.text-page{ font-family: Georgia, serif; font-size: clamp(0.82rem, 2.4vw, 1rem); line-height: 1.7; white-space: pre-wrap; }
+  .page-body.text-page::first-letter{ font-size: 2.2rem; font-weight:700; float:left; line-height: 0.8; margin: 4px 5px 0 0; color: var(--blue); }
 
   .polaroid{
-    background: #fff; padding: 10px 10px 34px; margin: 0 auto;
-    box-shadow: 0 10px 22px rgba(0,0,0,0.25);
-    max-width: 78%;
+    background: #fff; padding: 10px 10px 32px; margin: 0 auto; position: relative;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.28);
+    max-width: 82%;
   }
   .polaroid img{ display:block; width:100%; aspect-ratio: 4/5; object-fit: cover; background: linear-gradient(160deg,#dfe7f7,#c9d6f0); }
   .polaroid .cap{
     font-family: "Comic Sans MS", "Segoe Print", cursive;
-    text-align:center; font-size: 0.85rem; color: #3a3350; margin-top: 8px;
+    text-align:center; font-size: 0.82rem; color: #3a3350; margin-top: 8px;
   }
   .polaroid .placeholder-ph{
     width:100%; aspect-ratio:4/5; display:flex; align-items:center; justify-content:center;
-    font-size: 1.8rem; background: linear-gradient(160deg,#dfe7f7,#c9d6f0); color:#8f9fc9;
+    font-size: 2rem; background: linear-gradient(160deg,#dfe7f7,#c9d6f0); color:#8f9fc9;
   }
   .tape{
-    position:absolute; width: 56px; height: 20px;
+    position:absolute; width: 46px; height: 16px; top: -8px;
     background: rgba(255,255,255,0.55); border: 1px solid rgba(0,0,0,0.05);
     box-shadow: 0 2px 4px rgba(0,0,0,0.15);
   }
+  .tape.tl{ left: 6px; transform: rotate(-8deg); }
+  .tape.tr{ right: 6px; transform: rotate(6deg); }
 
-  .page-controls{ display:flex; align-items:center; justify-content:space-between; padding: 8px 18px 16px; }
-  .page-controls button{
-    border:none; background: rgba(42,35,64,0.08); color: var(--ink);
-    width: 40px; height: 40px; border-radius: 50%; font-size: 1.1rem; cursor:pointer;
+  .book-controls{
+    display:flex; align-items:center; justify-content:center; gap: 22px; z-index:1;
   }
-  .page-controls button:disabled{ opacity: 0.3; }
-  .page-dots{ display:flex; gap:5px; }
-  .page-dots span{ width:6px; height:6px; border-radius:50%; background: rgba(42,35,64,0.2); }
-  .page-dots span.active{ background: var(--ink); }
+  .book-controls button{
+    border:none; background: rgba(110,168,255,0.15); color: var(--cream);
+    width: 44px; height: 44px; border-radius: 50%; font-size: 1.2rem; cursor:pointer;
+    border: 1px solid rgba(110,168,255,0.35);
+  }
+  .book-controls button:disabled{ opacity: 0.25; }
+  .book-indicator{ font-size: 0.85rem; color: rgba(251,245,234,0.65); min-width: 70px; text-align:center; }
+  .tap-zone{ position:absolute; top:0; bottom:0; width: 30%; z-index: 4; cursor: pointer; }
+  .tap-zone.left{ left:0; }
+  .tap-zone.right{ right:0; }
 
-  /* ================= CAKE ================= */
-  .cake-wrap{ display:flex; flex-direction:column; align-items:center; gap: 6px; }
-  .cake{ position: relative; width: 220px; height: 190px; }
-  .plate{ position:absolute; bottom:0; left:50%; transform:translateX(-50%); width: 200px; height: 16px; border-radius: 50%;
-    background: radial-gradient(closest-side, rgba(255,255,255,0.35), rgba(255,255,255,0.05)); }
-  .tier{ position:absolute; left:50%; transform: translateX(-50%); border-radius: 10px; }
-  .tier-bottom{ bottom: 14px; width: 190px; height: 62px;
-    background: linear-gradient(180deg, var(--sky), var(--blue));
-    box-shadow: inset 0 -10px 14px rgba(0,0,0,0.2); }
-  .tier-top{ bottom: 70px; width: 130px; height: 52px;
-    background: linear-gradient(180deg, var(--periwinkle), var(--sky));
-    box-shadow: inset 0 -8px 12px rgba(0,0,0,0.18); }
-  .frosting{ position:absolute; left:50%; transform:translateX(-50%); height: 16px; border-radius: 50%; background: var(--cream); }
-  .frosting-bottom{ bottom: 68px; width: 196px; }
-  .frosting-top{ bottom: 118px; width: 136px; }
-  .drip{ position:absolute; width:10px; height:18px; background:var(--cream); border-radius: 0 0 8px 8px; }
+
+  /* ================= CAKE (pseudo-3D) ================= */
+  .cake-wrap{ display:flex; flex-direction:column; align-items:center; gap: 10px; }
+  .cake{ position: relative; width: 250px; height: 220px; }
+  .cake-shadow{
+    position:absolute; bottom:-4px; left:50%; transform:translateX(-50%);
+    width: 216px; height: 26px; border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(0,0,0,0.5), transparent 75%);
+    filter: blur(2px);
+  }
+  .plate{
+    position:absolute; bottom:10px; left:50%; transform:translateX(-50%) rotateX(70deg);
+    width: 226px; height: 226px; border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(255,255,255,0.4), rgba(255,255,255,0.08) 70%, transparent 74%);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  }
+
+  .tier{ position:absolute; left:50%; transform: translateX(-50%); }
+  .tier-body{
+    position:absolute; inset:0; border-radius: 8px 8px 16px 16px;
+    box-shadow: inset 0 -16px 22px rgba(0,0,0,0.28), inset 0 3px 4px rgba(255,255,255,0.15);
+  }
+  .tier-face{
+    position:absolute; left:0; right:0; border-radius: 50%;
+  }
+  .tier-bottom{ width: 214px; bottom: 20px; }
+  .tier-bottom .tier-body{ height: 68px; background: linear-gradient(90deg, #0f2a5e 0%, #1c3a7a 16%, #6ea8ff 48%, #a8c8ff 52%, #1c3a7a 84%, #0f2a5e 100%); }
+  .tier-bottom .tier-face{ height: 24px; top: -12px; background: radial-gradient(ellipse at 50% 35%, #cfe0ff, #6ea8ff 65%, #3a5fa8 100%); }
+
+  .tier-top{ width: 150px; bottom: 78px; }
+  .tier-top .tier-body{ height: 56px; background: linear-gradient(90deg, #3a5fa8 0%, #6ea8ff 16%, #d8e7ff 48%, #eef4ff 52%, #6ea8ff 84%, #3a5fa8 100%); }
+  .tier-top .tier-face{ height: 20px; top: -10px; background: radial-gradient(ellipse at 50% 35%, #fffef8, #f0e6c8 65%, #cbb98f 100%); }
+
+  .frosting-drip{ position:absolute; width:12px; height:20px; background: var(--cream); border-radius: 0 0 10px 10px; box-shadow: inset -3px 0 4px rgba(0,0,0,0.08); }
   .sprinkle{ position:absolute; width:5px; height:5px; border-radius:2px; }
-  .candle-mini{ position:absolute; bottom: 138px; left:50%; transform:translateX(-50%); width: 8px; height: 42px; z-index: 3; }
-  .candle-mini .stick{ position:absolute; bottom:0; width:100%; height:100%; border-radius:2px;
-    background: repeating-linear-gradient(45deg, var(--gold), var(--gold) 4px, var(--cream) 4px, var(--cream) 8px); }
-  .candle-mini .wick{ position:absolute; top:-6px; left:50%; width:2px; height:8px; background:#3a2c1a; transform:translateX(-50%); }
-  .candle-mini .flame{
-    position:absolute; top:-26px; left:50%; width:14px; height:22px; transform: translateX(-50%);
-    background: radial-gradient(circle at 50% 70%, #fff2b8, var(--gold) 60%, #ff8a3d 100%);
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    animation: flicker 1.3s ease-in-out infinite;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+
+  .candle-mini{ position:absolute; bottom: 140px; left:50%; transform:translateX(-50%); width: 9px; height: 44px; z-index: 3; }
+  .candle-mini .stick{
+    position:absolute; bottom:0; width:100%; height:100%; border-radius:3px;
+    background: repeating-linear-gradient(90deg, var(--gold) 0 3px, var(--cream) 3px 6px);
+    box-shadow: inset -2px 0 3px rgba(0,0,0,0.2);
   }
-  .candle-mini.blown .flame{ opacity:0; transform: translateX(-50%) scale(0.2); }
+  .candle-mini .wick{ position:absolute; top:-6px; left:50%; width:2px; height:8px; background:#3a2c1a; transform:translateX(-50%); }
+
+  .flame-glow{
+    position:absolute; top:-40px; left:50%; width:46px; height:46px; transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(255,200,90,0.55), transparent 70%);
+    filter: blur(3px);
+    animation: glowPulse 1.6s ease-in-out infinite;
+    transition: opacity 0.3s ease;
+  }
+  .candle-mini.blown .flame-glow{ opacity: 0; }
+  @keyframes glowPulse{ 0%,100%{ opacity: 0.6; transform: translateX(-50%) scale(1); } 50%{ opacity: 0.85; transform: translateX(-50%) scale(1.15); } }
+
+  .flame-outer{
+    position:absolute; top:-27px; left:50%; width:15px; height:23px; transform: translateX(-50%);
+    background: radial-gradient(circle at 50% 75%, #ffe28a, var(--gold) 55%, #ff7a2e 100%);
+    border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+    animation: flickerOuter 1.1s ease-in-out infinite;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform-origin: bottom center;
+  }
+  .flame-inner{
+    position:absolute; top:-21px; left:50%; width:7px; height:12px; transform: translateX(-50%);
+    background: radial-gradient(circle at 50% 80%, #fff8dd, #ffd76a 70%);
+    border-radius: 50% 50% 50% 50% / 65% 65% 35% 35%;
+    animation: flickerInner 0.85s ease-in-out infinite;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform-origin: bottom center;
+  }
+  .candle-mini.blown .flame-outer,
+  .candle-mini.blown .flame-inner{ opacity:0; transform: translateX(-50%) scale(0.2); }
+  @keyframes flickerOuter{
+    0%,100%{ transform: translateX(-50%) scaleY(1) rotate(-3deg); }
+    30%{ transform: translateX(-52%) scaleY(1.08) rotate(2deg); }
+    60%{ transform: translateX(-48%) scaleY(0.94) rotate(-2deg); }
+    80%{ transform: translateX(-50%) scaleY(1.05) rotate(4deg); }
+  }
+  @keyframes flickerInner{
+    0%,100%{ transform: translateX(-50%) scaleY(1) rotate(2deg); }
+    50%{ transform: translateX(-49%) scaleY(0.88) rotate(-3deg); }
+  }
+
   .smoke{
     position:absolute; top:-30px; left:50%; width:6px; height:6px; border-radius:50%;
     background: rgba(220,220,220,0.6); transform: translateX(-50%);
@@ -333,7 +510,7 @@
     0%{ opacity:0.7; transform: translate(-50%,0) scale(1); }
     100%{ opacity:0; transform: translate(-50%,-40px) scale(3); }
   }
-  @keyframes flicker{ 0%,100%{ transform: translateX(-50%) scale(1) rotate(-2deg);} 50%{ transform: translateX(-50%) scale(1.08) rotate(2deg);} }
+
 
   .mic-frame{
     display:flex; flex-direction:column; align-items:center; gap: 10px; margin-top: 14px;
@@ -412,36 +589,59 @@
 
   <section class="snap-section reasons-section" id="reasons">
     <h2 class="section-title reveal">Just a few reasons</h2>
-    <p class="section-sub reveal">Tap each one</p>
-    <div class="reasons-grid reveal-stagger" id="reasonsGrid"></div>
+    <div class="title-flourish reveal">❦</div>
+    <p class="section-sub reveal">Drag a card, or tap the arrows</p>
+    <div class="stack-outer reveal">
+      <div class="stack-glow"></div>
+      <div class="card-stack" id="cardStack"></div>
+      <div class="stack-controls">
+        <button id="stackPrev" aria-label="Previous reason">‹</button>
+        <div class="stack-indicator" id="stackIndicator">1 / 6</div>
+        <button id="stackNext" aria-label="Next reason">›</button>
+      </div>
+      <div class="stack-hint">tap a card to reveal it</div>
+    </div>
   </section>
 
   <section class="snap-section book-section" id="book">
     <h2 class="section-title reveal">A letter, for you</h2>
+    <div class="title-flourish reveal">❦</div>
     <p class="section-sub reveal">Break the seal when you're ready</p>
-    <div class="book-wrap reveal">
+    <div class="book-outer reveal">
+      <div class="book-glow"></div>
       <div class="book">
-        <div class="book-spine"></div>
-        <div class="ribbon"></div>
+        <div class="book-left" id="bookLeft">
+          <div class="left-deco">
+            <svg viewBox="0 0 100 100" fill="none" stroke="#1c3a7a" stroke-width="2.2">
+              <path d="M50 82 C 10 55, 10 20, 35 15 C 48 12, 50 25, 50 30 C 50 25, 52 12, 65 15 C 90 20, 90 55, 50 82 Z"/>
+              <path d="M18 40 Q 50 30 82 40" stroke-opacity="0.4"/>
+              <path d="M18 55 Q 50 47 82 55" stroke-opacity="0.4"/>
+            </svg>
+            <div class="title" id="leftTitle">Our story</div>
+            <div class="since" id="leftSince">since —</div>
+          </div>
+        </div>
+        <div class="book-right">
+          <div class="page-edges"></div>
+          <div class="ribbon"></div>
+          <div class="book-stage" id="bookStage"></div>
+          <div class="tap-zone left" id="tapPrev"></div>
+          <div class="tap-zone right" id="tapNext"></div>
+        </div>
         <div class="book-cover" id="bookCover">
           <div class="seal">💌</div>
-          <div class="serif" style="font-size:1.15rem;" id="coverName">For Love</div>
+          <h3 class="serif" id="coverName">For Love</h3>
           <div class="tap-note">tap to open</div>
         </div>
-        <div class="book-pages" id="bookPages">
-          <div class="page-flip" id="pageFlip">
-            <div class="page-num" id="pageNum">Page 1</div>
-            <div class="page-body" id="pageBody"></div>
-          </div>
-          <div class="page-controls">
-            <button id="pagePrev" aria-label="Previous page">‹</button>
-            <div class="page-dots" id="pageDots"></div>
-            <button id="pageNext" aria-label="Next page">›</button>
-          </div>
-        </div>
+      </div>
+      <div class="book-controls" id="bookControls" style="display:none;">
+        <button id="pagePrev" aria-label="Previous page">‹</button>
+        <div class="book-indicator" id="pageIndicator">1 / 8</div>
+        <button id="pageNext" aria-label="Next page">›</button>
       </div>
     </div>
   </section>
+
 
   <section class="snap-section cake-section" id="cake">
     <h2 class="section-title reveal">Make a wish</h2>
@@ -451,15 +651,22 @@
       <div class="cake" id="cakeEl">
         <div class="candle-mini" id="candle">
           <div class="smoke" id="smoke"></div>
-          <div class="flame"></div>
+          <div class="flame-glow"></div>
+          <div class="flame-outer"></div>
+          <div class="flame-inner"></div>
           <div class="wick"></div>
           <div class="stick"></div>
         </div>
-        <div class="frosting frosting-top"></div>
-        <div class="tier tier-top"></div>
-        <div class="frosting frosting-bottom"></div>
-        <div class="tier tier-bottom"></div>
+        <div class="tier tier-top">
+          <div class="tier-face"></div>
+          <div class="tier-body"></div>
+        </div>
+        <div class="tier tier-bottom">
+          <div class="tier-face"></div>
+          <div class="tier-body"></div>
+        </div>
         <div class="plate"></div>
+        <div class="cake-shadow"></div>
       </div>
 
       <div class="mic-frame">
@@ -524,6 +731,8 @@ const CONFIG = {
 
 document.getElementById('nameSlot').textContent = CONFIG.herName;
 document.getElementById('coverName').textContent = "For " + CONFIG.herName;
+document.getElementById('leftTitle').textContent = "Our story, " + CONFIG.herName;
+document.getElementById('leftSince').textContent = "since " + new Date(CONFIG.sinceDate + "T00:00:00").toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
 
 /* ---------- Day counter ---------- */
 (function setupCounter(){
@@ -548,87 +757,245 @@ document.getElementById('coverName').textContent = "For " + CONFIG.herName;
   }
 })();
 
-/* ---------- Reasons flip grid ---------- */
-(function setupReasons(){
-  const grid = document.getElementById('reasonsGrid');
+/* ---------- Reasons: swipeable stacked deck ---------- */
+(function setupStack(){
+  const stackEl = document.getElementById('cardStack');
+  const indicator = document.getElementById('stackIndicator');
+  const prevBtn = document.getElementById('stackPrev');
+  const nextBtn = document.getElementById('stackNext');
+  const total = CONFIG.reasons.length;
+
+  // Fixed pool of card elements; `order[0]` is always the index currently on top.
+  let order = CONFIG.reasons.map((_, i) => i);
+  const baseRotation = CONFIG.reasons.map(() => (Math.random() * 8 - 4));
+  const cards = [];
+
   CONFIG.reasons.forEach((reason, i) => {
     const card = document.createElement('div');
-    card.className = 'flip-card';
+    card.className = 'stack-card';
     card.innerHTML = `
-      <div class="flip-inner">
-        <div class="flip-face flip-front"><span class="num">${i + 1}</span>💙</div>
-        <div class="flip-face flip-back">${reason}</div>
+      <div class="stack-flip-inner">
+        <div class="stack-face stack-front">
+          <div class="badge">${i + 1}</div>
+          <div class="heart">💙</div>
+          <div class="hint">tap to reveal</div>
+        </div>
+        <div class="stack-face stack-back">${reason}</div>
       </div>`;
-    card.addEventListener('click', () => card.classList.toggle('flipped'));
-    grid.appendChild(card);
+    stackEl.appendChild(card);
+    cards.push(card);
   });
+
+  function layout(withTransition){
+    order.forEach((cardIndex, pos) => {
+      const el = cards[cardIndex];
+      if (!withTransition) el.style.transition = 'none';
+      const depth = Math.min(pos, 3);
+      const scale = 1 - depth * 0.06;
+      const translateY = depth * 14;
+      const rot = pos === 0 ? 0 : baseRotation[cardIndex];
+      el.style.zIndex = total - pos;
+      el.style.opacity = pos <= 3 ? 1 : 0;
+      el.style.transform = `translate(0px, ${translateY}px) scale(${scale}) rotate(${rot}deg)`;
+      el.style.pointerEvents = pos === 0 ? 'auto' : 'none';
+      if (!withTransition) {
+        el.offsetHeight; // force reflow before re-enabling transition
+        el.style.transition = '';
+      }
+    });
+    indicator.textContent = `${1} / ${total}`;
+  }
+
+  function advance(direction){
+    const topIndex = order[0];
+    const topEl = cards[topIndex];
+    const flyX = direction > 0 ? 420 : -420;
+    const flyRot = direction > 0 ? 24 : -24;
+    topEl.style.transform = `translate(${flyX}px, -10px) scale(0.94) rotate(${flyRot}deg)`;
+    topEl.style.opacity = '0';
+
+    setTimeout(() => {
+      if (direction > 0) {
+        order.push(order.shift());
+      } else {
+        order.unshift(order.pop());
+      }
+      // snap the moved card to the back of the stack instantly, then
+      // re-enable transitions so the whole stack cascades into place
+      topEl.style.transition = 'none';
+      const backPos = total - 1;
+      topEl.style.transform = `translate(0px, ${Math.min(backPos,3) * 14}px) scale(${1 - Math.min(backPos,3)*0.06}) rotate(${baseRotation[topIndex]}deg)`;
+      topEl.style.opacity = backPos <= 3 ? '1' : '0';
+      topEl.offsetHeight;
+      topEl.style.transition = '';
+      layout(true);
+    }, 380);
+  }
+
+  // drag-to-swipe on the top card only
+  let dragging = false;
+  let startX = 0;
+  let currentTopEl = null;
+
+  stackEl.addEventListener('pointerdown', (e) => {
+    const topIndex = order[0];
+    currentTopEl = cards[topIndex];
+    if (e.target.closest('.stack-card') !== currentTopEl) return;
+    dragging = true;
+    startX = e.clientX;
+    currentTopEl.setPointerCapture(e.pointerId);
+    currentTopEl.style.transition = 'none';
+  });
+
+  stackEl.addEventListener('pointermove', (e) => {
+    if (!dragging || !currentTopEl) return;
+    const dx = e.clientX - startX;
+    currentTopEl.style.transform = `translate(${dx}px, -6px) scale(1) rotate(${dx / 18}deg)`;
+  });
+
+  function endDrag(e){
+    if (!dragging || !currentTopEl) return;
+    dragging = false;
+    const dx = e.clientX - startX;
+    currentTopEl.style.transition = '';
+    if (Math.abs(dx) > 90) {
+      advance(dx > 0 ? 1 : -1);
+    } else {
+      layout(true);
+    }
+    currentTopEl = null;
+  }
+
+  stackEl.addEventListener('pointerup', endDrag);
+  stackEl.addEventListener('pointercancel', endDrag);
+
+  // tap (no meaningful drag) flips the card
+  cards.forEach(card => {
+    let downX = 0, moved = false;
+    card.addEventListener('pointerdown', e => { downX = e.clientX; moved = false; });
+    card.addEventListener('pointermove', e => { if (Math.abs(e.clientX - downX) > 6) moved = true; });
+    card.addEventListener('pointerup', () => { if (!moved) card.classList.toggle('flipped'); });
+  });
+
+  prevBtn.addEventListener('click', () => advance(-1));
+  nextBtn.addEventListener('click', () => advance(1));
+
+  layout(false);
 })();
 
-/* ---------- Letter booklet (text + photo pages, with flip transition) ---------- */
+/* ---------- Letter booklet: real 3D page-turn (text + photo leaves) ---------- */
 (function setupBook(){
   const cover = document.getElementById('bookCover');
-  const pages = document.getElementById('bookPages');
-  const pageFlip = document.getElementById('pageFlip');
-  const pageBody = document.getElementById('pageBody');
-  const pageNum = document.getElementById('pageNum');
-  const pageDots = document.getElementById('pageDots');
+  const stage = document.getElementById('bookStage');
+  const controls = document.getElementById('bookControls');
   const prevBtn = document.getElementById('pagePrev');
   const nextBtn = document.getElementById('pageNext');
+  const indicator = document.getElementById('pageIndicator');
+  const tapPrev = document.getElementById('tapPrev');
+  const tapNext = document.getElementById('tapNext');
   const total = CONFIG.bookPages.length;
-  let current = 0;
+  const TURN_MS = 750;
+  let current = 0; // index of the topmost, currently-visible (unturned) leaf
+  let opened = false;
 
-  for (let i = 0; i < total; i++) {
-    const dot = document.createElement('span');
-    pageDots.appendChild(dot);
-  }
+  const todayLabel = new Date().toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
 
-  function renderContent(){
-    const p = CONFIG.bookPages[current];
-    pageBody.className = 'page-body';
+  const leaves = CONFIG.bookPages.map((p, i) => {
+    const leaf = document.createElement('div');
+    leaf.className = 'leaf';
+
+    const front = document.createElement('div');
+    front.className = 'leaf-face leaf-front';
+
     if (p.type === 'photo') {
-      const rotate = (current % 2 === 0 ? -3 : 2);
-      pageBody.innerHTML = `
-        <div class="polaroid" style="transform: rotate(${rotate}deg);">
-          ${p.src ? `<img src="${p.src}" alt="${p.caption}">` : `<div class="placeholder-ph">📷</div>`}
-          <div class="cap">${p.caption || ''}</div>
+      const rotate = (i % 2 === 0 ? -3 : 2);
+      front.innerHTML = `
+        <div class="page-meta"><span>${CONFIG.herName}</span><span>${i + 1} / ${total}</span></div>
+        <div class="page-body">
+          <div class="polaroid" style="transform: rotate(${rotate}deg);">
+            <span class="tape tl"></span><span class="tape tr"></span>
+            ${p.src ? `<img src="${p.src}" alt="${p.caption || ''}">` : `<div class="placeholder-ph">📷</div>`}
+            <div class="cap">${p.caption || ''}</div>
+          </div>
         </div>`;
     } else {
-      pageBody.classList.add('text-page');
-      pageBody.textContent = p.text;
+      front.innerHTML = `
+        <div class="page-meta"><span>${i === 0 ? todayLabel : ''}</span><span>${i + 1} / ${total}</span></div>
+        <div class="page-body text-page"></div>`;
+      // set via textContent to avoid HTML-escaping issues with the letter text
+      requestAnimationFrame(() => {
+        front.querySelector('.text-page').textContent = p.text;
+      });
     }
-    pageNum.textContent = `Page ${current + 1} of ${total}`;
+
+    const back = document.createElement('div');
+    back.className = 'leaf-face leaf-back';
+
+    leaf.appendChild(front);
+    leaf.appendChild(back);
+    stage.appendChild(leaf);
+    return leaf;
+  });
+
+  function layout(){
+    leaves.forEach((leaf, i) => {
+      const isTurned = i < current;
+      leaf.style.transform = isTurned ? 'rotateY(-180deg)' : 'rotateY(0deg)';
+      leaf.style.zIndex = isTurned ? String(i - total) : String(total - i);
+    });
+    indicator.textContent = `${current + 1} / ${total}`;
     prevBtn.disabled = current === 0;
     nextBtn.disabled = current === total - 1;
-    [...pageDots.children].forEach((d, i) => d.classList.toggle('active', i === current));
   }
 
-  function goTo(next){
-    if (next < 0 || next > total - 1 || next === current) return;
-    pageFlip.classList.add('turning');
+  function next(){
+    if (!opened || current >= total - 1) return;
+    const i = current;
+    current++;
+    leaves[i].classList.add('turning');
+    leaves[i].style.transform = 'rotateY(-180deg)';
     setTimeout(() => {
-      current = next;
-      renderContent();
-      pageFlip.classList.remove('turning');
-    }, 220);
+      leaves[i].style.zIndex = String(i - total);
+      leaves[i].classList.remove('turning');
+    }, TURN_MS);
+    indicator.textContent = `${current + 1} / ${total}`;
+    prevBtn.disabled = false;
+    nextBtn.disabled = current === total - 1;
+  }
+
+  function prev(){
+    if (!opened || current <= 0) return;
+    current--;
+    const i = current;
+    leaves[i].style.zIndex = String(total - i);
+    leaves[i].classList.add('turning');
+    leaves[i].style.transform = 'rotateY(0deg)';
+    setTimeout(() => { leaves[i].classList.remove('turning'); }, TURN_MS);
+    indicator.textContent = `${current + 1} / ${total}`;
+    nextBtn.disabled = false;
+    prevBtn.disabled = current === 0;
   }
 
   cover.addEventListener('click', () => {
+    opened = true;
     cover.classList.add('open');
-    pages.classList.add('show');
-    renderContent();
+    stage.classList.add('show');
+    controls.style.display = 'flex';
+    layout();
   });
 
-  prevBtn.addEventListener('click', () => goTo(current - 1));
-  nextBtn.addEventListener('click', () => goTo(current + 1));
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+  tapPrev.addEventListener('click', prev);
+  tapNext.addEventListener('click', next);
 
   let touchStartX = null;
-  pages.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-  pages.addEventListener('touchend', e => {
+  stage.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  stage.addEventListener('touchend', e => {
     if (touchStartX === null) return;
     const dx = e.changedTouches[0].clientX - touchStartX;
     if (Math.abs(dx) > 40) {
-      if (dx < 0) goTo(current + 1);
-      if (dx > 0) goTo(current - 1);
+      if (dx < 0) next(); else prev();
     }
     touchStartX = null;
   }, { passive: true });
@@ -638,23 +1005,23 @@ document.getElementById('coverName').textContent = "For " + CONFIG.herName;
 (function decorateCake(){
   const cake = document.getElementById('cakeEl');
   const colors = ['#f2c14e', '#ff9db3', '#9fb9ff', '#fbf5ea'];
-  for (let i = 0; i < 14; i++) {
+  for (let i = 0; i < 16; i++) {
     const s = document.createElement('div');
     s.className = 'sprinkle';
     s.style.background = colors[i % colors.length];
-    s.style.bottom = (68 + Math.random() * 60) + 'px';
-    s.style.left = (50 + (Math.random() * 160 - 80)) + 'px';
+    s.style.bottom = (78 + Math.random() * 44) + 'px';
+    s.style.left = (125 + (Math.random() * 130 - 65)) + 'px';
     s.style.transform = `rotate(${Math.random() * 360}deg)`;
     cake.appendChild(s);
   }
-  [40, 90, 140].forEach(left => {
+  [95, 125, 155].forEach(left => {
     const d = document.createElement('div');
-    d.className = 'drip';
-    d.style.bottom = '112px';
+    d.className = 'frosting-drip';
+    d.style.bottom = '124px';
     d.style.left = left + 'px';
     cake.appendChild(d);
   });
-});
+})();
 
 /* ---------- Wish candle: mic-blow with tap fallback ---------- */
 (function setupCandle(){
