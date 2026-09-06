@@ -6,7 +6,7 @@
 <title>Happy Birthday</title>
 <style>
   :root{
-    --navy-deep: #060a1f;
+    --navy-deep: #05081a;
     --navy: #0d1a3f;
     --blue: #1c3a7a;
     --sky: #6ea8ff;
@@ -14,29 +14,46 @@
     --gold: #f2c14e;
     --blush: #ff9db3;
     --cream: #fbf5ea;
-    --paper: #f7efdd;
+    --paper: #f4e9d0;
+    --paper-dark: #e9dcbb;
     --ink: #2a2340;
   }
 
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-  html { scroll-behavior: smooth; }
-
+  html{
+    scroll-behavior: smooth;
+    height: 100%;
+  }
   body{
     margin:0;
+    height: 100%;
     background: var(--navy-deep);
     color: var(--cream);
     font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
-    overflow-x: hidden;
   }
 
   h1, h2, .serif { font-family: Georgia, "Times New Roman", serif; }
 
-  section{
+  /* ---------- scroll snap container ---------- */
+  #site[hidden]{ display:none; }
+  #site{
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .snap-section{
+    min-height: 100vh;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     position: relative;
-    padding: 90px 20px;
-    max-width: 640px;
-    margin: 0 auto;
+    padding: 70px 20px 50px;
+    overflow: hidden;
   }
 
   /* ---------- Starfield ambience ---------- */
@@ -54,65 +71,65 @@
     opacity: 0.5;
   }
 
-  /* ---------- Confetti overlay (shared across sections) ---------- */
   #confettiCanvas{
-    position: fixed;
-    inset: 0;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none;
-    z-index: 999;
+    position: fixed; inset: 0; width: 100vw; height: 100vh;
+    pointer-events: none; z-index: 999;
   }
+
+  /* ---------- Dot nav ---------- */
+  .dot-nav{
+    position: fixed;
+    right: 18px; top: 50%; transform: translateY(-50%);
+    z-index: 400;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .dot-nav[hidden]{ display:none; }
+  .dot-nav button{
+    width: 10px; height: 10px; border-radius: 50%;
+    border: 1px solid rgba(251,245,234,0.5);
+    background: transparent;
+    padding: 0; cursor: pointer;
+    transition: background 0.25s ease, transform 0.25s ease;
+  }
+  .dot-nav button.active{ background: var(--gold); border-color: var(--gold); transform: scale(1.3); }
+
+  /* ---------- Reveal-on-scroll ---------- */
+  .reveal{ opacity: 0; transform: translateY(26px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  .reveal.in-view{ opacity: 1; transform: translateY(0); }
+  .reveal-stagger > * { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal-stagger.in-view > *{ opacity: 1; transform: translateY(0); }
+  .reveal-stagger.in-view > *:nth-child(1){ transition-delay: 0.05s; }
+  .reveal-stagger.in-view > *:nth-child(2){ transition-delay: 0.12s; }
+  .reveal-stagger.in-view > *:nth-child(3){ transition-delay: 0.19s; }
+  .reveal-stagger.in-view > *:nth-child(4){ transition-delay: 0.26s; }
+  .reveal-stagger.in-view > *:nth-child(5){ transition-delay: 0.33s; }
+  .reveal-stagger.in-view > *:nth-child(6){ transition-delay: 0.4s; }
 
   /* ================= GATE ================= */
   #gate{
-    position: fixed;
-    inset: 0;
-    z-index: 500;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    padding: 28px;
-    text-align: center;
+    position: fixed; inset: 0; z-index: 500;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 20px; padding: 28px; text-align: center;
     background: radial-gradient(120% 140% at 50% -10%, var(--blue) 0%, var(--navy-deep) 70%);
     transition: opacity 0.7s ease, visibility 0.7s ease;
   }
   #gate.hidden{ opacity: 0; visibility: hidden; pointer-events: none; }
-
-  #gate h1{
-    font-size: clamp(1.6rem, 7vw, 2.3rem);
-    margin: 0;
-    color: var(--gold);
-  }
+  #gate h1{ font-size: clamp(1.6rem, 7vw, 2.3rem); margin: 0; color: var(--gold); }
   #gate p{ margin: 0; color: rgba(251,245,234,0.75); max-width: 320px; font-size: 0.95rem; }
 
   .cam-frame{
-    position: relative;
-    width: min(320px, 78vw);
-    aspect-ratio: 4/5;
-    border-radius: 24px;
-    overflow: hidden;
-    background: #05070f;
+    position: relative; width: min(320px, 78vw); aspect-ratio: 4/5;
+    border-radius: 24px; overflow: hidden; background: #05070f;
     box-shadow: 0 0 0 2px rgba(242,193,78,0.3), 0 30px 60px -20px rgba(0,0,0,0.7);
   }
-  .cam-frame video{
-    position:absolute; inset:0; width:100%; height:100%;
-    object-fit: cover; transform: scaleX(-1);
-  }
-  .cam-hint{
-    position:absolute; left:0; right:0; bottom:0;
-    padding: 12px;
-    font-size: 0.85rem;
-    background: linear-gradient(to top, rgba(5,7,15,0.9), rgba(5,7,15,0));
-  }
+  .cam-frame video{ position:absolute; inset:0; width:100%; height:100%; object-fit: cover; transform: scaleX(-1); }
+  .cam-hint{ position:absolute; left:0; right:0; bottom:0; padding: 12px; font-size: 0.85rem;
+    background: linear-gradient(to top, rgba(5,7,15,0.9), rgba(5,7,15,0)); }
   .dot{ display:inline-block; width:7px; height:7px; border-radius:50%; background: var(--blush); margin-right:6px; }
   .dot.ready{ background: var(--sky); }
 
   .cam-cover{
-    position:absolute; inset:0;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
     gap:14px; padding:18px; text-align:center;
     background: linear-gradient(160deg, rgba(28,58,122,0.5), rgba(6,10,31,0.85));
   }
@@ -125,10 +142,7 @@
   }
   button.primary:disabled{ opacity: 0.6; }
 
-  .meter{
-    width: min(320px, 78vw); height: 7px; border-radius: 999px;
-    background: rgba(251,245,234,0.15); overflow: hidden;
-  }
+  .meter{ width: min(320px, 78vw); height: 7px; border-radius: 999px; background: rgba(251,245,234,0.15); overflow: hidden; }
   .meter-fill{ height:100%; width:0%; background: linear-gradient(90deg, var(--blush), var(--gold)); }
 
   .skip-link{
@@ -138,12 +152,10 @@
   }
   .skip-link.show{ opacity: 1; }
 
-  /* ================= SITE ================= */
-  #site[hidden]{ display: none; }
-
-  .hero{ text-align:center; padding-top: 70px; }
+  /* ================= HERO ================= */
+  .hero{ text-align:center; }
   .hero .eyebrow{ letter-spacing: 3px; text-transform: uppercase; font-size: 0.75rem; color: var(--sky); margin-bottom: 10px; }
-  .hero h1{ font-size: clamp(2.2rem, 9vw, 3.3rem); margin: 0 0 14px; line-height: 1.15; }
+  .hero h1{ font-size: clamp(2.3rem, 10vw, 3.6rem); margin: 0 0 14px; line-height: 1.15; }
   .hero h1 .accent{ color: var(--gold); }
   .hero p.tagline{ color: rgba(251,245,234,0.78); font-size: 1.05rem; max-width: 420px; margin: 0 auto 30px; }
 
@@ -152,166 +164,201 @@
     background: rgba(110,168,255,0.1);
     border: 1px solid rgba(110,168,255,0.3);
     border-radius: 18px; padding: 16px 28px; margin: 0 auto;
+    box-shadow: 0 0 30px rgba(110,168,255,0.15);
   }
-  .counter .num{ font-size: 2.1rem; font-weight: 700; color: var(--gold); font-family: Georgia, serif; }
+  .counter .num{ font-size: 2.3rem; font-weight: 700; color: var(--gold); font-family: Georgia, serif; }
   .counter .label{ font-size: 0.8rem; color: rgba(251,245,234,0.65); }
 
-  .floaties{ position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:0; }
-  .floaties span{
-    position:absolute; bottom:-40px; font-size: 1.6rem; opacity: 0.55;
-    animation: floatUp linear infinite;
+  .scroll-cue{
+    position:absolute; bottom: 26px; left:50%; transform: translateX(-50%);
+    font-size: 0.78rem; color: rgba(251,245,234,0.55);
+    display:flex; flex-direction:column; align-items:center; gap:6px;
   }
+  .scroll-cue .chev{ animation: bounce 1.8s ease-in-out infinite; font-size: 1.1rem; }
+  @keyframes bounce{ 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(6px);} }
+
+  .floaties{ position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:0; }
+  .floaties span{ position:absolute; bottom:-40px; font-size: 1.6rem; opacity: 0.55; animation: floatUp linear infinite; }
   @keyframes floatUp{
     0%{ transform: translateY(0) translateX(0) rotate(0deg); opacity:0; }
     10%{ opacity: 0.6; }
-    100%{ transform: translateY(-620px) translateX(var(--drift,20px)) rotate(25deg); opacity:0; }
+    100%{ transform: translateY(-650px) translateX(var(--drift,20px)) rotate(25deg); opacity:0; }
   }
 
-  .section-title{ text-align:center; margin: 0 0 8px; font-size: clamp(1.5rem, 6vw, 2rem); }
-  .section-sub{ text-align:center; color: rgba(251,245,234,0.65); margin: 0 0 34px; font-size: 0.95rem; }
-
-  /* ---------- Gallery ---------- */
-  .gallery-row{
-    display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory;
-    padding: 6px 6px 20px; margin: 0 -6px;
-    -webkit-overflow-scrolling: touch;
-  }
-  .gallery-row::-webkit-scrollbar{ height: 6px; }
-  .gallery-row::-webkit-scrollbar-thumb{ background: rgba(110,168,255,0.4); border-radius: 999px; }
-
-  .photo-card{
-    flex: 0 0 78%; max-width: 260px; scroll-snap-align: center;
-    border-radius: 20px; overflow: hidden;
-    background: linear-gradient(160deg, var(--blue), var(--navy));
-    box-shadow: 0 20px 40px -18px rgba(0,0,0,0.6);
-  }
-  .photo-card .img-slot{
-    width: 100%; aspect-ratio: 4/5; object-fit: cover; display:block;
-  }
-  .photo-card .placeholder{
-    width: 100%; aspect-ratio: 4/5; display:flex; flex-direction:column;
-    align-items:center; justify-content:center; gap: 8px;
-    background: linear-gradient(160deg, rgba(110,168,255,0.25), rgba(6,10,31,0.4));
-    font-size: 2rem;
-  }
-  .photo-card .placeholder small{ font-size: 0.7rem; color: rgba(251,245,234,0.6); max-width: 180px; text-align:center; }
-  .photo-card .caption{ padding: 12px 14px 16px; font-size: 0.88rem; color: rgba(251,245,234,0.85); }
-
-  .gallery-nav{ display:flex; justify-content:center; gap: 12px; margin-top: 4px; }
-  .gallery-nav button{
-    width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(110,168,255,0.4);
-    background: rgba(110,168,255,0.12); color: var(--cream); font-size: 1rem; cursor: pointer;
-  }
+  .section-title{ text-align:center; margin: 0 0 8px; font-size: clamp(1.6rem, 6vw, 2.1rem); }
+  .section-sub{ text-align:center; color: rgba(251,245,234,0.65); margin: 0 0 30px; font-size: 0.95rem; }
 
   /* ---------- Reasons flip grid ---------- */
-  .reasons-grid{
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
-  }
+  .reasons-grid{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; width: 100%; max-width: 560px; }
   @media (min-width: 480px){ .reasons-grid{ grid-template-columns: repeat(3, 1fr); } }
 
-  .flip-card{
-    perspective: 900px; aspect-ratio: 1; cursor: pointer;
-  }
-  .flip-inner{
-    position: relative; width:100%; height:100%;
-    transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(.4,.2,.2,1);
-  }
+  .flip-card{ perspective: 900px; aspect-ratio: 1; cursor: pointer; }
+  .flip-inner{ position: relative; width:100%; height:100%; transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(.4,.2,.2,1); }
   .flip-card.flipped .flip-inner{ transform: rotateY(180deg); }
-  .flip-face{
-    position:absolute; inset:0; backface-visibility: hidden;
-    border-radius: 16px; display:flex; align-items:center; justify-content:center;
-    padding: 12px; text-align:center;
-  }
-  .flip-front{
-    background: linear-gradient(160deg, var(--blue), var(--navy));
-    border: 1px solid rgba(242,193,78,0.35);
-    font-size: 1.6rem;
-  }
-  .flip-back{
-    background: linear-gradient(160deg, var(--sky), var(--blue));
-    transform: rotateY(180deg);
-    font-size: 0.8rem; color: var(--navy-deep); font-weight: 600; line-height:1.35;
-  }
+  .flip-face{ position:absolute; inset:0; backface-visibility: hidden; border-radius: 16px; display:flex; align-items:center; justify-content:center; padding: 12px; text-align:center; }
+  .flip-front{ background: linear-gradient(160deg, var(--blue), var(--navy)); border: 1px solid rgba(242,193,78,0.35); font-size: 1.6rem; }
+  .flip-front .num{ position:absolute; top:8px; left:10px; font-size:0.7rem; color: rgba(251,245,234,0.4); font-family: Georgia, serif; }
+  .flip-back{ background: linear-gradient(160deg, var(--sky), var(--blue)); transform: rotateY(180deg); font-size: 0.8rem; color: var(--navy-deep); font-weight: 600; line-height:1.35; }
 
-  /* ---------- Letter booklet ---------- */
-  .book-wrap{ display:flex; justify-content:center; }
+  /* ================= BOOK ================= */
+  .book-section{ perspective: 1600px; }
+  .book-wrap{ display:flex; justify-content:center; width:100%; }
   .book{
-    position: relative; width: min(340px, 88vw); aspect-ratio: 3/4;
-    perspective: 1400px;
+    position: relative; width: min(360px, 88vw); aspect-ratio: 3/4.1;
+  }
+  .book-spine{
+    position:absolute; left:-6px; top: 3%; bottom: 3%; width: 14px;
+    background: linear-gradient(90deg, var(--navy), var(--blue) 60%, var(--navy));
+    border-radius: 6px 0 0 6px;
+    box-shadow: inset -3px 0 6px rgba(0,0,0,0.4);
+  }
+  .ribbon{
+    position:absolute; top:-4px; right: 34px; width: 20px; height: 46px;
+    background: linear-gradient(180deg, var(--blush), #d94f6d);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+    z-index: 5; filter: drop-shadow(0 6px 8px rgba(0,0,0,0.35));
   }
   .book-cover{
-    position:absolute; inset:0; border-radius: 10px 14px 14px 10px;
-    background: linear-gradient(155deg, var(--blue) 0%, var(--navy) 100%);
-    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(242,193,78,0.25);
+    position:absolute; inset:0; border-radius: 8px 14px 14px 8px;
+    background:
+      radial-gradient(140% 100% at 0% 0%, rgba(255,255,255,0.06), transparent 55%),
+      linear-gradient(155deg, var(--blue) 0%, var(--navy) 100%);
+    box-shadow: 0 30px 70px -20px rgba(0,0,0,0.75), inset 0 0 0 1px rgba(242,193,78,0.25);
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
-    cursor: pointer; transition: transform 0.6s ease, opacity 0.6s ease;
-    padding: 20px; text-align:center;
+    cursor: pointer; transition: transform 0.7s cubic-bezier(.5,0,.3,1), opacity 0.5s ease 0.2s;
+    padding: 20px; text-align:center; transform-origin: left center;
   }
-  .book-cover.open{ transform: rotateY(-100deg); opacity:0; pointer-events:none; }
+  .book-cover.open{ transform: rotateY(-150deg); opacity:0; pointer-events:none; }
   .seal{
-    width: 56px; height: 56px; border-radius: 50%;
+    width: 58px; height: 58px; border-radius: 50%;
     background: radial-gradient(circle at 35% 30%, var(--blush), #c23b58);
     display:flex; align-items:center; justify-content:center; font-size: 1.4rem;
     box-shadow: 0 6px 14px rgba(0,0,0,0.4);
+    animation: pulse 2.4s ease-in-out infinite;
   }
+  @keyframes pulse{ 0%,100%{ transform: scale(1);} 50%{ transform: scale(1.06);} }
   .book-cover .tap-note{ font-size: 0.8rem; color: rgba(251,245,234,0.7); }
 
   .book-pages{
-    position:absolute; inset:0; border-radius: 10px 14px 14px 10px;
-    background: var(--paper);
+    position:absolute; inset:0; border-radius: 8px 14px 14px 8px;
+    background:
+      repeating-linear-gradient(rgba(42,35,64,0.05) 0 1px, transparent 1px 28px),
+      var(--paper);
     color: var(--ink);
     display:flex; flex-direction:column;
-    opacity:0; pointer-events:none; transition: opacity 0.5s ease;
-    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.7);
+    opacity:0; pointer-events:none; transition: opacity 0.4s ease;
+    box-shadow: 0 30px 70px -20px rgba(0,0,0,0.75);
   }
   .book-pages.show{ opacity:1; pointer-events:auto; }
+  .book-pages::after{
+    content:''; position:absolute; bottom:0; right:0; width:0; height:0;
+    border-style: solid; border-width: 0 0 34px 34px;
+    border-color: transparent transparent var(--paper-dark) transparent;
+    filter: drop-shadow(-2px -2px 3px rgba(0,0,0,0.15));
+  }
 
-  .page-body{
-    flex: 1; padding: 30px 26px 10px; overflow-y:auto;
-    font-family: Georgia, serif; font-size: 1rem; line-height: 1.7;
-    white-space: pre-wrap;
+  .page-flip{ transform: rotateY(0deg); transition: transform 0.42s ease, opacity 0.42s ease; transform-origin: left center; flex:1; display:flex; flex-direction:column; }
+  .page-flip.turning{ transform: rotateY(-85deg); opacity: 0.3; }
+
+  .page-num{ text-align:center; font-size: 0.72rem; color: rgba(42,35,64,0.5); padding: 16px 0 4px; letter-spacing: 1px; }
+  .page-body{ flex: 1; padding: 6px 26px 6px; overflow-y:auto; display:flex; flex-direction:column; justify-content:center; }
+  .page-body.text-page{ font-family: Georgia, serif; font-size: 0.98rem; line-height: 1.7; white-space: pre-wrap; }
+
+  .polaroid{
+    background: #fff; padding: 10px 10px 34px; margin: 0 auto;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.25);
+    max-width: 78%;
   }
-  .page-num{ text-align:center; font-size: 0.75rem; color: rgba(42,35,64,0.5); padding-bottom: 6px; }
-  .page-controls{
-    display:flex; align-items:center; justify-content:space-between;
-    padding: 10px 18px 18px;
+  .polaroid img{ display:block; width:100%; aspect-ratio: 4/5; object-fit: cover; background: linear-gradient(160deg,#dfe7f7,#c9d6f0); }
+  .polaroid .cap{
+    font-family: "Comic Sans MS", "Segoe Print", cursive;
+    text-align:center; font-size: 0.85rem; color: #3a3350; margin-top: 8px;
   }
+  .polaroid .placeholder-ph{
+    width:100%; aspect-ratio:4/5; display:flex; align-items:center; justify-content:center;
+    font-size: 1.8rem; background: linear-gradient(160deg,#dfe7f7,#c9d6f0); color:#8f9fc9;
+  }
+  .tape{
+    position:absolute; width: 56px; height: 20px;
+    background: rgba(255,255,255,0.55); border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  }
+
+  .page-controls{ display:flex; align-items:center; justify-content:space-between; padding: 8px 18px 16px; }
   .page-controls button{
     border:none; background: rgba(42,35,64,0.08); color: var(--ink);
     width: 40px; height: 40px; border-radius: 50%; font-size: 1.1rem; cursor:pointer;
   }
   .page-controls button:disabled{ opacity: 0.3; }
+  .page-dots{ display:flex; gap:5px; }
+  .page-dots span{ width:6px; height:6px; border-radius:50%; background: rgba(42,35,64,0.2); }
+  .page-dots span.active{ background: var(--ink); }
 
-  /* ---------- Wish candle ---------- */
-  .candle-wrap{ display:flex; flex-direction:column; align-items:center; gap: 22px; }
-  .candle{ position:relative; width: 26px; height: 90px; cursor: pointer; }
-  .candle .body{
-    position:absolute; bottom:0; width:100%; height: 72px; border-radius: 5px;
-    background: repeating-linear-gradient(45deg, var(--sky), var(--sky) 6px, var(--periwinkle) 6px, var(--periwinkle) 12px);
-  }
-  .candle .wick{ position:absolute; top: -8px; left: 50%; width:2px; height:10px; background:#3a2c1a; transform: translateX(-50%); }
-  .candle .flame{
-    position:absolute; top:-30px; left:50%; width:16px; height:24px;
-    transform: translateX(-50%);
+  /* ================= CAKE ================= */
+  .cake-wrap{ display:flex; flex-direction:column; align-items:center; gap: 6px; }
+  .cake{ position: relative; width: 220px; height: 190px; }
+  .plate{ position:absolute; bottom:0; left:50%; transform:translateX(-50%); width: 200px; height: 16px; border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(255,255,255,0.35), rgba(255,255,255,0.05)); }
+  .tier{ position:absolute; left:50%; transform: translateX(-50%); border-radius: 10px; }
+  .tier-bottom{ bottom: 14px; width: 190px; height: 62px;
+    background: linear-gradient(180deg, var(--sky), var(--blue));
+    box-shadow: inset 0 -10px 14px rgba(0,0,0,0.2); }
+  .tier-top{ bottom: 70px; width: 130px; height: 52px;
+    background: linear-gradient(180deg, var(--periwinkle), var(--sky));
+    box-shadow: inset 0 -8px 12px rgba(0,0,0,0.18); }
+  .frosting{ position:absolute; left:50%; transform:translateX(-50%); height: 16px; border-radius: 50%; background: var(--cream); }
+  .frosting-bottom{ bottom: 68px; width: 196px; }
+  .frosting-top{ bottom: 118px; width: 136px; }
+  .drip{ position:absolute; width:10px; height:18px; background:var(--cream); border-radius: 0 0 8px 8px; }
+  .sprinkle{ position:absolute; width:5px; height:5px; border-radius:2px; }
+  .candle-mini{ position:absolute; bottom: 138px; left:50%; transform:translateX(-50%); width: 8px; height: 42px; z-index: 3; }
+  .candle-mini .stick{ position:absolute; bottom:0; width:100%; height:100%; border-radius:2px;
+    background: repeating-linear-gradient(45deg, var(--gold), var(--gold) 4px, var(--cream) 4px, var(--cream) 8px); }
+  .candle-mini .wick{ position:absolute; top:-6px; left:50%; width:2px; height:8px; background:#3a2c1a; transform:translateX(-50%); }
+  .candle-mini .flame{
+    position:absolute; top:-26px; left:50%; width:14px; height:22px; transform: translateX(-50%);
     background: radial-gradient(circle at 50% 70%, #fff2b8, var(--gold) 60%, #ff8a3d 100%);
     border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    animation: flicker 1.4s ease-in-out infinite;
+    animation: flicker 1.3s ease-in-out infinite;
     transition: opacity 0.3s ease, transform 0.3s ease;
   }
-  .candle.blown .flame{ opacity:0; transform: translateX(-50%) scale(0.3); }
-  @keyframes flicker{
-    0%,100%{ transform: translateX(-50%) scale(1) rotate(-2deg); }
-    50%{ transform: translateX(-50%) scale(1.08) rotate(2deg); }
+  .candle-mini.blown .flame{ opacity:0; transform: translateX(-50%) scale(0.2); }
+  .smoke{
+    position:absolute; top:-30px; left:50%; width:6px; height:6px; border-radius:50%;
+    background: rgba(220,220,220,0.6); transform: translateX(-50%);
+    opacity:0; pointer-events:none;
   }
-  .wish-hint{ font-size: 0.85rem; color: rgba(251,245,234,0.6); }
+  .smoke.go{ animation: smokeRise 1.4s ease-out forwards; }
+  @keyframes smokeRise{
+    0%{ opacity:0.7; transform: translate(-50%,0) scale(1); }
+    100%{ opacity:0; transform: translate(-50%,-40px) scale(3); }
+  }
+  @keyframes flicker{ 0%,100%{ transform: translateX(-50%) scale(1) rotate(-2deg);} 50%{ transform: translateX(-50%) scale(1.08) rotate(2deg);} }
+
+  .mic-frame{
+    display:flex; flex-direction:column; align-items:center; gap: 10px; margin-top: 14px;
+  }
+  .mic-meter{ width: 220px; height: 8px; border-radius:999px; background: rgba(251,245,234,0.15); overflow:hidden; }
+  .mic-meter-fill{ height:100%; width:0%; background: linear-gradient(90deg, var(--sky), var(--gold)); }
+  .mic-status{ font-size: 0.85rem; color: rgba(251,245,234,0.7); min-height: 1.3em; text-align:center; }
+
+  .fallback-tap{
+    background:none; border: 1px solid rgba(251,245,234,0.3); color: rgba(251,245,234,0.7);
+    font-size: 0.8rem; border-radius: 999px; padding: 8px 16px; cursor:pointer; margin-top: 4px;
+  }
+
   .wish-text{
     max-width: 340px; text-align:center; font-family: Georgia, serif; font-size: 1.05rem;
-    color: var(--gold); opacity:0; transition: opacity 0.6s ease; min-height: 1.4em;
+    color: var(--gold); opacity:0; transition: opacity 0.6s ease; min-height: 1.4em; margin-top: 18px;
   }
   .wish-text.show{ opacity:1; }
 
-  footer{ text-align:center; padding: 40px 20px 70px; color: rgba(251,245,234,0.4); font-size: 0.82rem; }
+  footer{ text-align:center; padding: 30px 20px 46px; color: rgba(251,245,234,0.4); font-size: 0.82rem; position:relative; z-index:2; }
   footer .heart{ color: var(--blush); }
+
+  @media (max-height: 680px){
+    .snap-section{ padding-top: 50px; padding-bottom: 30px; }
+  }
 </style>
 </head>
 <body>
@@ -340,51 +387,55 @@
   <button class="skip-link" id="skipLink">Camera not working? Tap here instead 💙</button>
 </div>
 
+<!-- ============= DOT NAV ============= -->
+<nav class="dot-nav" id="dotNav" hidden>
+  <button data-target="hero" class="active" aria-label="Hero"></button>
+  <button data-target="reasons" aria-label="Reasons"></button>
+  <button data-target="book" aria-label="Letter"></button>
+  <button data-target="cake" aria-label="Cake"></button>
+</nav>
+
 <!-- ============= SITE ============= -->
 <main id="site" hidden>
 
-  <section class="hero">
+  <section class="snap-section hero" id="hero">
     <div class="floaties" id="floaties"></div>
-    <div class="eyebrow">happy birthday</div>
-    <h1>To the best part<br>of my <span class="accent">everyday</span>,<br><span id="nameSlot" class="accent">Love</span>.</h1>
-    <p class="tagline">I made you a little corner of the internet. Scroll down — there's a lot of us in here.</p>
-    <div class="counter">
+    <div class="eyebrow reveal">happy birthday</div>
+    <h1 class="reveal">To the best part<br>of my <span class="accent">everyday</span>,<br><span id="nameSlot" class="accent">Love</span>.</h1>
+    <p class="tagline reveal">I made you a little corner of the internet. This one you get to explore, not just scroll.</p>
+    <div class="counter reveal">
       <span class="num" id="dayCount">—</span>
       <span class="label">days of us, and counting</span>
     </div>
+    <div class="scroll-cue"><span>keep going</span><span class="chev">⌄</span></div>
   </section>
 
-  <section class="gallery-section">
-    <h2 class="section-title">Us, in pictures</h2>
-    <p class="section-sub">A few of my favorite moments with you</p>
-    <div class="gallery-row" id="galleryRow"></div>
-    <div class="gallery-nav">
-      <button id="galPrev" aria-label="Previous photo">‹</button>
-      <button id="galNext" aria-label="Next photo">›</button>
-    </div>
+  <section class="snap-section reasons-section" id="reasons">
+    <h2 class="section-title reveal">Just a few reasons</h2>
+    <p class="section-sub reveal">Tap each one</p>
+    <div class="reasons-grid reveal-stagger" id="reasonsGrid"></div>
   </section>
 
-  <section class="reasons-section">
-    <h2 class="section-title">Just a few reasons</h2>
-    <p class="section-sub">Tap each one</p>
-    <div class="reasons-grid" id="reasonsGrid"></div>
-  </section>
-
-  <section class="letter-section">
-    <h2 class="section-title">A letter, for you</h2>
-    <p class="section-sub">Break the seal when you're ready</p>
-    <div class="book-wrap">
+  <section class="snap-section book-section" id="book">
+    <h2 class="section-title reveal">A letter, for you</h2>
+    <p class="section-sub reveal">Break the seal when you're ready</p>
+    <div class="book-wrap reveal">
       <div class="book">
+        <div class="book-spine"></div>
+        <div class="ribbon"></div>
         <div class="book-cover" id="bookCover">
           <div class="seal">💌</div>
           <div class="serif" style="font-size:1.15rem;" id="coverName">For Love</div>
           <div class="tap-note">tap to open</div>
         </div>
         <div class="book-pages" id="bookPages">
-          <div class="page-num" id="pageNum">Page 1</div>
-          <div class="page-body" id="pageBody"></div>
+          <div class="page-flip" id="pageFlip">
+            <div class="page-num" id="pageNum">Page 1</div>
+            <div class="page-body" id="pageBody"></div>
+          </div>
           <div class="page-controls">
             <button id="pagePrev" aria-label="Previous page">‹</button>
+            <div class="page-dots" id="pageDots"></div>
             <button id="pageNext" aria-label="Next page">›</button>
           </div>
         </div>
@@ -392,23 +443,41 @@
     </div>
   </section>
 
-  <section class="wish-section">
-    <h2 class="section-title">Make a wish</h2>
-    <p class="section-sub">Tap the flame to blow it out</p>
-    <div class="candle-wrap">
-      <div class="candle" id="candle">
-        <div class="flame"></div>
-        <div class="wick"></div>
-        <div class="body"></div>
+  <section class="snap-section cake-section" id="cake">
+    <h2 class="section-title reveal">Make a wish</h2>
+    <p class="section-sub reveal">Blow into your mic to blow it out</p>
+
+    <div class="cake-wrap reveal">
+      <div class="cake" id="cakeEl">
+        <div class="candle-mini" id="candle">
+          <div class="smoke" id="smoke"></div>
+          <div class="flame"></div>
+          <div class="wick"></div>
+          <div class="stick"></div>
+        </div>
+        <div class="frosting frosting-top"></div>
+        <div class="tier tier-top"></div>
+        <div class="frosting frosting-bottom"></div>
+        <div class="tier tier-bottom"></div>
+        <div class="plate"></div>
       </div>
-      <p class="wish-hint" id="wishHint">go on, blow it out</p>
+
+      <div class="mic-frame">
+        <button class="primary" id="micBtn">Turn on microphone</button>
+        <div class="mic-meter" id="micMeterWrap" style="display:none;">
+          <div class="mic-meter-fill" id="micMeterFill"></div>
+        </div>
+        <div class="mic-status" id="micStatus"></div>
+        <button class="fallback-tap" id="tapBlow">or just tap the flame</button>
+      </div>
+
       <p class="wish-text" id="wishText"></p>
     </div>
-  </section>
 
-  <footer>
-    made with <span class="heart">♥</span> just for you
-  </footer>
+    <footer>
+      made with <span class="heart">♥</span> just for you
+    </footer>
+  </section>
 
 </main>
 
@@ -422,15 +491,8 @@ import {
    EDIT ME — everything personal lives here.
    ===================================================================== */
 const CONFIG = {
-  herName: "Babe",                 // her name, shown in the hero + letter
-  sinceDate: "2025-01-27",         // YYYY-MM-DD — the date you count from
-
-  photos: [
-    { src: "src/fav_photo.jpg", caption: "I always love that adorable smile of yours"},
-    { src: "src/together.jpg", caption: "One of our best days together" },
-    { src: "src/somwhere.jpg", caption: "Times where we just want peace together" },
-    { src: "src/smile.jpg", caption: "You always makes me smile when I see you" }
-  ],
+  herName: "Babe",
+  sinceDate: "2025-01-27",
 
   reasons: [
     "You always make me laugh and smile even when I'm having a bad day",
@@ -438,13 +500,21 @@ const CONFIG = {
     "You are the strongest person I've ever met",
     "You are always beautiful, not just on the outside but also on the inside",
     "You are the biggest blessing in my life",
-    "I love you so much!",
+    "I love you so much!"
   ],
 
-  letterPages: [
-    "My dearest Babe/Baby/Asawa ko/Bestfriend/lahat na since ikaw naman ang 'lahat' sa buhay ko eh. First of all, I love youuuuu very much. I know na gusto mo ng ganto sa iyong Birthday. Pero ginawa ko ito not just because \"gusto\" mo, its because I want you to feel that this day is a very special day to you. I made this not just to greet you a Happy Birthday, I also want to utilize this to show you how much I love you. I will never get tired of saying that you are the best blessing that I've received in my life. You changed me for the better. And when there are times that I am lost, you are always there to guide me back to the correct path.",
-    "You and I have been through so much, and I know that there are still more challenges to come. Even if that's the case, I will still never stop loving you.",
-    "I will ensure that each birthdays will be special. I love youuuuuuuuu so much.\n\n-Your baby boy"
+  // The book is one continuous flow — mix "text" pages and "photo" pages
+  // in whatever order feels right. Leave a photo's src empty to show a
+  // placeholder until you add the real file.
+  bookPages: [
+    { type: "text", text: "My dearest Babe/Baby/Asawa ko/Bestfriend/lahat na since ikaw naman ang 'lahat' sa buhay ko eh. First of all, I love youuuuu very much. I know na gusto mo ng ganto sa iyong Birthday. Pero ginawa ko ito not just because \"gusto\" mo, its because I want you to feel that this day is a very special day to you. I made this not just to greet you a Happy Birthday, I also want to utilize this to show you how much I love you." },
+    { type: "photo", src: "src/fav_photo.jpg", caption: "I always love that adorable smile of yours" },
+    { type: "text", text: "I will never get tired of saying that you are the best blessing that I've received in my life. You changed me for the better. And when there are times that I am lost, you are always there to guide me back to the correct path." },
+    { type: "photo", src: "src/together.jpg", caption: "One of our best days together" },
+    { type: "photo", src: "src/somwhere.jpg", caption: "Times where we just want peace together" },
+    { type: "text", text: "You and I have been through so much, and I know that there are still more challenges to come. Even if that's the case, I will still never stop loving you." },
+    { type: "photo", src: "src/smile.jpg", caption: "You always makes me smile when I see you" },
+    { type: "text", text: "I will ensure that each birthdays will be special. I love youuuuuuuuu so much.\n\n-Your baby boy" }
   ],
 
   wishText: "Whatever you wished for — I hope it comes true. And if it doesn't, as long as I'm here, I'll make sure that it comes true."
@@ -478,32 +548,6 @@ document.getElementById('coverName').textContent = "For " + CONFIG.herName;
   }
 })();
 
-/* ---------- Gallery ---------- */
-(function setupGallery(){
-  const row = document.getElementById('galleryRow');
-  CONFIG.photos.forEach(photo => {
-    const card = document.createElement('div');
-    card.className = 'photo-card';
-    if (photo.src) {
-      card.innerHTML = `<img class="img-slot" src="${photo.src}" alt="${photo.caption}">`;
-    } else {
-      card.innerHTML = `<div class="placeholder">📷<small>${photo.caption}</small></div>`;
-    }
-    const cap = document.createElement('div');
-    cap.className = 'caption';
-    cap.textContent = photo.caption;
-    card.appendChild(cap);
-    row.appendChild(card);
-  });
-
-  document.getElementById('galPrev').addEventListener('click', () => {
-    row.scrollBy({ left: -260, behavior: 'smooth' });
-  });
-  document.getElementById('galNext').addEventListener('click', () => {
-    row.scrollBy({ left: 260, behavior: 'smooth' });
-  });
-})();
-
 /* ---------- Reasons flip grid ---------- */
 (function setupReasons(){
   const grid = document.getElementById('reasonsGrid');
@@ -512,7 +556,7 @@ document.getElementById('coverName').textContent = "For " + CONFIG.herName;
     card.className = 'flip-card';
     card.innerHTML = `
       <div class="flip-inner">
-        <div class="flip-face flip-front">💙</div>
+        <div class="flip-face flip-front"><span class="num">${i + 1}</span>💙</div>
         <div class="flip-face flip-back">${reason}</div>
       </div>`;
     card.addEventListener('click', () => card.classList.toggle('flipped'));
@@ -520,61 +564,176 @@ document.getElementById('coverName').textContent = "For " + CONFIG.herName;
   });
 })();
 
-/* ---------- Letter booklet ---------- */
+/* ---------- Letter booklet (text + photo pages, with flip transition) ---------- */
 (function setupBook(){
   const cover = document.getElementById('bookCover');
   const pages = document.getElementById('bookPages');
+  const pageFlip = document.getElementById('pageFlip');
   const pageBody = document.getElementById('pageBody');
   const pageNum = document.getElementById('pageNum');
+  const pageDots = document.getElementById('pageDots');
   const prevBtn = document.getElementById('pagePrev');
   const nextBtn = document.getElementById('pageNext');
+  const total = CONFIG.bookPages.length;
   let current = 0;
 
-  function render(){
-    pageBody.textContent = CONFIG.letterPages[current];
-    pageNum.textContent = `Page ${current + 1} of ${CONFIG.letterPages.length}`;
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('span');
+    pageDots.appendChild(dot);
+  }
+
+  function renderContent(){
+    const p = CONFIG.bookPages[current];
+    pageBody.className = 'page-body';
+    if (p.type === 'photo') {
+      const rotate = (current % 2 === 0 ? -3 : 2);
+      pageBody.innerHTML = `
+        <div class="polaroid" style="transform: rotate(${rotate}deg);">
+          ${p.src ? `<img src="${p.src}" alt="${p.caption}">` : `<div class="placeholder-ph">📷</div>`}
+          <div class="cap">${p.caption || ''}</div>
+        </div>`;
+    } else {
+      pageBody.classList.add('text-page');
+      pageBody.textContent = p.text;
+    }
+    pageNum.textContent = `Page ${current + 1} of ${total}`;
     prevBtn.disabled = current === 0;
-    nextBtn.disabled = current === CONFIG.letterPages.length - 1;
+    nextBtn.disabled = current === total - 1;
+    [...pageDots.children].forEach((d, i) => d.classList.toggle('active', i === current));
+  }
+
+  function goTo(next){
+    if (next < 0 || next > total - 1 || next === current) return;
+    pageFlip.classList.add('turning');
+    setTimeout(() => {
+      current = next;
+      renderContent();
+      pageFlip.classList.remove('turning');
+    }, 220);
   }
 
   cover.addEventListener('click', () => {
     cover.classList.add('open');
     pages.classList.add('show');
-    render();
+    renderContent();
   });
 
-  prevBtn.addEventListener('click', () => { if (current > 0){ current--; render(); } });
-  nextBtn.addEventListener('click', () => { if (current < CONFIG.letterPages.length - 1){ current++; render(); } });
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
 
-  // swipe support
   let touchStartX = null;
   pages.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
   pages.addEventListener('touchend', e => {
     if (touchStartX === null) return;
     const dx = e.changedTouches[0].clientX - touchStartX;
     if (Math.abs(dx) > 40) {
-      if (dx < 0 && current < CONFIG.letterPages.length - 1) { current++; render(); }
-      if (dx > 0 && current > 0) { current--; render(); }
+      if (dx < 0) goTo(current + 1);
+      if (dx > 0) goTo(current - 1);
     }
     touchStartX = null;
   }, { passive: true });
 })();
 
-/* ---------- Wish candle ---------- */
+/* ---------- Cake: sprinkles + drips ---------- */
+(function decorateCake(){
+  const cake = document.getElementById('cakeEl');
+  const colors = ['#f2c14e', '#ff9db3', '#9fb9ff', '#fbf5ea'];
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement('div');
+    s.className = 'sprinkle';
+    s.style.background = colors[i % colors.length];
+    s.style.bottom = (68 + Math.random() * 60) + 'px';
+    s.style.left = (50 + (Math.random() * 160 - 80)) + 'px';
+    s.style.transform = `rotate(${Math.random() * 360}deg)`;
+    cake.appendChild(s);
+  }
+  [40, 90, 140].forEach(left => {
+    const d = document.createElement('div');
+    d.className = 'drip';
+    d.style.bottom = '112px';
+    d.style.left = left + 'px';
+    cake.appendChild(d);
+  });
+});
+
+/* ---------- Wish candle: mic-blow with tap fallback ---------- */
 (function setupCandle(){
   const candle = document.getElementById('candle');
-  const wishHint = document.getElementById('wishHint');
+  const smoke = document.getElementById('smoke');
+  const micBtn = document.getElementById('micBtn');
+  const micMeterWrap = document.getElementById('micMeterWrap');
+  const micMeterFill = document.getElementById('micMeterFill');
+  const micStatus = document.getElementById('micStatus');
+  const tapBlow = document.getElementById('tapBlow');
   const wishText = document.getElementById('wishText');
-  let blown = false;
 
-  candle.addEventListener('click', () => {
+  let blown = false;
+  let audioCtx = null;
+  let holdProgress = 0;
+  const HOLD_SECONDS = 0.7;
+  const BLOW_THRESHOLD = 0.12; // rms level considered "blowing"
+
+  function extinguish(){
     if (blown) return;
     blown = true;
     candle.classList.add('blown');
-    wishHint.style.display = 'none';
+    smoke.classList.add('go');
+    micStatus.textContent = '';
+    micMeterWrap.style.display = 'none';
     wishText.textContent = CONFIG.wishText;
     wishText.classList.add('show');
     launchConfetti();
+  }
+
+  tapBlow.addEventListener('click', extinguish);
+
+  micBtn.addEventListener('click', async () => {
+    micBtn.disabled = true;
+    micBtn.textContent = 'Listening…';
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const source = audioCtx.createMediaStreamSource(stream);
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 512;
+      source.connect(analyser);
+      const data = new Uint8Array(analyser.fftSize);
+
+      micBtn.style.display = 'none';
+      micMeterWrap.style.display = 'block';
+      micStatus.textContent = 'Go ahead — blow!';
+
+      function loop(){
+        if (blown) return;
+        analyser.getByteTimeDomainData(data);
+        let sumSquares = 0;
+        for (let i = 0; i < data.length; i++) {
+          const v = (data[i] - 128) / 128;
+          sumSquares += v * v;
+        }
+        const rms = Math.sqrt(sumSquares / data.length);
+        micMeterFill.style.width = Math.min(100, (rms / BLOW_THRESHOLD) * 100) + '%';
+
+        if (rms >= BLOW_THRESHOLD) {
+          holdProgress += 1 / 30;
+          micStatus.textContent = 'Keep going…';
+        } else {
+          holdProgress = Math.max(0, holdProgress - 0.05);
+          micStatus.textContent = 'Go ahead — blow!';
+        }
+
+        if (holdProgress >= HOLD_SECONDS) {
+          extinguish();
+          return;
+        }
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+    } catch (err) {
+      console.error(err);
+      micStatus.textContent = 'Mic unavailable — tap the flame instead';
+      micBtn.style.display = 'none';
+    }
   });
 })();
 
@@ -634,6 +793,42 @@ function animateConfetti(){
   }
 }
 
+/* ---------- Scroll reveal ---------- */
+function setupReveal(){
+  const targets = document.querySelectorAll('.reveal, .reveal-stagger');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('in-view');
+    });
+  }, { threshold: 0.35 });
+  targets.forEach(t => io.observe(t));
+}
+
+/* ---------- Dot nav ---------- */
+function setupDotNav(){
+  const nav = document.getElementById('dotNav');
+  const buttons = [...nav.querySelectorAll('button')];
+  const sections = buttons.map(b => document.getElementById(b.dataset.target));
+  nav.hidden = false;
+
+  buttons.forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      sections[i].scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const idx = sections.indexOf(entry.target);
+        buttons.forEach(b => b.classList.remove('active'));
+        if (idx >= 0) buttons[idx].classList.add('active');
+      }
+    });
+  }, { threshold: 0.5 });
+  sections.forEach(s => io.observe(s));
+}
+
 /* ---------- Smile gate ---------- */
 (function setupGate(){
   const video = document.getElementById('video');
@@ -665,7 +860,8 @@ function animateConfetti(){
     gate.classList.add('hidden');
     setTimeout(() => {
       site.hidden = false;
-      window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+      setupReveal();
+      setupDotNav();
     }, 500);
   }
 
