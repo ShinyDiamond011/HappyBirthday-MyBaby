@@ -560,7 +560,7 @@
   }
   .tier-face{ position:absolute; left:0; right:0; border-radius: 50%; }
 
-  .tier-bottom{ width: 332px; bottom: 26px; }
+  .tier-bottom{ width: 332px; height: 120px; bottom: 26px; }
   .tier-bottom .tier-body{ height: 120px; background: linear-gradient(90deg, #0f2a5e 0%, #1c3a7a 16%, #6ea8ff 48%, #a8c8ff 52%, #1c3a7a 84%, #0f2a5e 100%); }
   .tier-bottom .tier-face{
     height: 40px; top: -20px;
@@ -568,7 +568,7 @@
     box-shadow: inset 0 3px 6px rgba(255,255,255,0.5), inset 0 -3px 8px rgba(0,0,0,0.15);
   }
 
-  .tier-top{ width: 232px; bottom: 146px; }  /* sits exactly on tier-bottom's top: 26 + 120 = 146 */
+  .tier-top{ width: 232px; height: 96px; bottom: 146px; }  /* sits exactly on tier-bottom's top: 26 + 120 = 146 */
   .tier-top .tier-body{ height: 96px; background: linear-gradient(90deg, #3a5fa8 0%, #6ea8ff 16%, #d8e7ff 48%, #eef4ff 52%, #6ea8ff 84%, #3a5fa8 100%); }
   .tier-top .tier-face{
     height: 34px; top: -17px;
@@ -579,7 +579,7 @@
   .frosting-drip{ position:absolute; width:18px; height:30px; background: var(--cream); border-radius: 0 0 15px 15px; box-shadow: inset -4px 0 6px rgba(0,0,0,0.08); }
   .sprinkle{ position:absolute; width:8px; height:8px; border-radius:3px; }
 
-  .candle-mini{ position:absolute; bottom: 238px; left:50%; transform:translateX(-50%); width: 14px; height: 64px; z-index: 3; }  /* planted into tier-top's frosting (top of tier-top = 242) */
+  .candle-mini{ position:absolute; bottom: 234px; left:50%; transform:translateX(-50%); width: 14px; height: 64px; z-index: 3; }  /* planted ~8px into tier-top's frosting (top of tier-top = 242) */
   .candle-mini .stick{
     position:absolute; bottom:0; width:100%; height:100%; border-radius:4px;
     background: repeating-linear-gradient(90deg, var(--gold) 0 5px, var(--cream) 5px 10px);
