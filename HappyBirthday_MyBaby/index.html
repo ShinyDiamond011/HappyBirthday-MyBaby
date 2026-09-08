@@ -1115,16 +1115,16 @@ document.getElementById('leftSince').textContent = "since " + new Date(CONFIG.si
     cake.appendChild(s);
   }
 
-  // a full ring of drips around the seam between the two tiers, not just 3 fixed ones
-  const dripCount = 23;
-  const tierTopLeft = 79;   // (390 - 232) / 2
-  const tierTopWidth = 232;
+  // a full ring of drips around the seam of the BOTTOM tier — spans its full width
+  const dripCount = 16;
+  const tierBottomLeft = 29;   // (390 - 332) / 2
+  const tierBottomWidth = 332;
   for (let i = 0; i < dripCount; i++) {
     const d = document.createElement('div');
     d.className = 'frosting-drip';
     d.style.bottom = (112 + Math.random() * 10) + 'px';
-    d.style.left = (tierTopLeft + 20 + (i * (tierTopWidth - 40) / (dripCount - 1))) + 'px';
-    d.style.height = (26 + Math.random() * 10) + 'px';
+    d.style.left = (tierBottomLeft + 8 + (i * (tierBottomWidth - 16) / (dripCount - 1))) + 'px';
+    d.style.height = (24 + Math.random() * 12) + 'px';
     cake.appendChild(d);
   }
 })();
