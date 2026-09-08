@@ -152,6 +152,13 @@
   }
   .skip-link.show{ opacity: 1; }
 
+  .leaf-close{
+    position:absolute; top:14px; right:18px; z-index:2;
+    border:none; background:rgba(0,0,0,0.06); color: var(--ink);
+    width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:0.9rem;
+  }
+  .page-body.text-page{ padding: 46px 32px 10px; overflow-y:auto; }
+
   /* ================= BIG REVEAL ================= */
   .big-reveal{
     position: fixed; inset: 0; z-index: 600;
@@ -200,11 +207,41 @@
   .music-toggle[hidden]{ display:none; }
 
   /* ================= HERO ================= */
-  .hero{ text-align:center; }
-  .hero .eyebrow{ letter-spacing: 3px; text-transform: uppercase; font-size: 0.8rem; color: var(--sky); margin-bottom: 12px; }
-  .hero h1{ font-size: clamp(2.7rem, 12vw, 4.6rem); margin: 0 0 16px; line-height: 1.12; }
-  .hero h1 .accent{ color: var(--gold); }
-  .hero p.tagline{ color: rgba(251,245,234,0.78); font-size: 1.2rem; max-width: 500px; margin: 0 auto 36px; }
+  .hero{ text-align:center; position:relative; }
+  .hero::before{
+    content:''; position:absolute; top:-8%; left:50%; width:640px; height:640px;
+    transform:translateX(-50%);
+    background: radial-gradient(circle, rgba(110,168,255,0.28), transparent 65%);
+    filter: blur(18px); z-index:0; pointer-events:none;
+    animation: heroGlow 6s ease-in-out infinite;
+  }
+  @keyframes heroGlow{
+    0%,100%{ opacity:0.55; transform:translateX(-50%) scale(1); }
+    50%    { opacity:1;    transform:translateX(-50%) scale(1.12); }
+  }
+  .hero > *{ position:relative; z-index:1; }
+
+  .hero .eyebrow{ letter-spacing: 3px; text-transform: uppercase; font-size: 0.8rem; color: var(--sky); margin-bottom: 12px; position:relative; }
+  .hero .eyebrow::after{
+    content:''; display:block; width:40px; height:2px; margin:8px auto 0;
+    background: var(--gold); animation: pulseLine 2s ease-in-out infinite;
+  }
+  @keyframes pulseLine{
+    0%,100%{ width:40px; opacity:0.5; }
+    50%    { width:74px; opacity:1;  }
+  }
+
+  .hero h1{ font-size: clamp(3rem, 13vw, 5.4rem); margin: 0 0 16px; line-height: 1.12; }
+  .hero h1 .accent{
+    background: linear-gradient(90deg, var(--gold), var(--blush), var(--gold));
+    background-size: 200% auto;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: shimmer 3.5s linear infinite;
+  }
+  @keyframes shimmer{ to{ background-position: 200% center; } }
+
+  .hero p.tagline{ color: rgba(251,245,234,0.78); font-size: 1.3rem; max-width: 500px; margin: 0 auto 36px; }
+  
 
   .counter{
     display:inline-flex; flex-direction:column; gap:4px;
@@ -245,7 +282,7 @@
   }
   .card-stack{
     position: relative; z-index:1;
-    width: min(460px, 88vw); height: min(600px, 74vh);
+    width: min(520px, 92vw); height: min(300px, 42vh);   /* was 460×600 (portrait) */
     touch-action: pan-y;
   }
   .stack-card{
@@ -263,15 +300,20 @@
   .stack-card.flipped .stack-flip-inner{ transform: rotateY(180deg); }
   .stack-face{
     position:absolute; inset:0; backface-visibility: hidden;
-    border-radius: 32px; display:flex; flex-direction:column; align-items:center; justify-content:center;
-    gap: 20px; padding: 36px; text-align:center;
-    box-shadow: 0 30px 60px -18px rgba(0,0,0,0.6);
+    border-radius: 10px;                                  /* was 32px */
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap: 14px; padding: 26px 44px; text-align:center;
+    box-shadow: 0 22px 40px -14px rgba(0,0,0,0.55), 0 2px 5px rgba(0,0,0,0.18);
   }
   .stack-front{
     background:
-      radial-gradient(120% 100% at 15% 0%, rgba(255,255,255,0.1), transparent 55%),
-      linear-gradient(160deg, var(--blue), var(--navy));
-    border: 1px solid rgba(242,193,78,0.3);
+      radial-gradient(circle at 20% 25%, rgba(0,0,0,0.02) 0.6px, transparent 0.6px),
+      radial-gradient(circle at 75% 65%, rgba(0,0,0,0.015) 0.6px, transparent 0.6px),
+      repeating-linear-gradient(rgba(42,35,64,0.04) 0 1px, transparent 1px 30px),
+      var(--paper);
+    background-size: 7px 7px, 6px 6px, 100% 30px, 100% 100%;
+    border: 1px solid rgba(0,0,0,0.06);
+    color: var(--ink);
   }
   .stack-front .badge{
     width: 78px; height: 78px; border-radius: 50%;
@@ -280,11 +322,11 @@
     display:flex; align-items:center; justify-content:center;
   }
   .stack-front .heart{ font-size: 2.3rem; }
-  .stack-front .hint{ font-size: 0.88rem; color: rgba(251,245,234,0.55); position:absolute; bottom: 24px; }
+  .stack-front .hint{ font-size: 0.88rem; color: rgba(42,35,64,0.45); position:absolute; bottom: 24px; }
   .stack-back{
-    background: linear-gradient(160deg, var(--sky), var(--blue));
+    background: var(--paper-dark);
     transform: rotateY(180deg);
-    font-size: 1.25rem; color: var(--navy-deep); font-weight: 600; line-height:1.45;
+    font-size: 1.15rem; color: var(--ink); font-weight: 600; line-height:1.45;
     font-family: Georgia, serif;
   }
   .stack-controls{ display:flex; align-items:center; gap: 24px; z-index:1; }
@@ -365,17 +407,26 @@
     border: 1px solid rgba(242,193,78,0.35); border-radius: 4px;
     pointer-events:none;
   }
-  .book-cover.open{ transform: rotateY(-155deg); opacity:0; pointer-events:none; }
-  .seal{
-    width: 84px; height: 84px; border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, var(--blush), #c23b58);
-    display:flex; align-items:center; justify-content:center; font-size: 2.1rem;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.4);
-    animation: pulse 2.4s ease-in-out infinite;
+  .book-cover.open{
+    animation: coverOpen 1.7s cubic-bezier(.45,0,.2,1) forwards;
+    pointer-events:none;
   }
-  @keyframes pulse{ 0%,100%{ transform: scale(1);} 50%{ transform: scale(1.06);} }
-  .book-cover .tap-note{ font-size: 1rem; color: rgba(251,245,234,0.7); }
-  .book-cover h3{ margin: 0; font-size: 1.9rem; }
+  .book-cover.closing{
+    animation: coverClose 0.9s cubic-bezier(.4,0,.2,1) forwards;
+    pointer-events:none;
+  }
+  @keyframes coverOpen{
+    0%   { transform: rotateY(0deg);   opacity:1; }
+    10%  { transform: rotateY(-6deg);  opacity:1; }   /* seal breaks, cover barely lifts */
+    30%  { transform: rotateY(-40deg); opacity:1; }
+    65%  { transform: rotateY(-115deg); opacity:1; }
+    100% { transform: rotateY(-155deg); opacity:0; }
+  }
+  @keyframes coverClose{
+    0%   { transform: rotateY(-155deg); opacity:0; }
+    20%  { transform: rotateY(-110deg); opacity:1; }
+    100% { transform: rotateY(0deg);    opacity:1; }
+  }
 
   .book-stage{
     position:absolute; inset:0;
@@ -425,7 +476,7 @@
 
   .page-meta{ display:flex; justify-content:space-between; align-items:baseline; padding: 22px 32px 0; font-size: 0.78rem; color: rgba(42,35,64,0.45); letter-spacing: 1px; }
   .page-body{ flex: 1; padding: 10px 32px; overflow-y:auto; display:flex; flex-direction:column; justify-content:center; }
-  .page-body.text-page{ font-family: Georgia, serif; font-size: clamp(0.95rem, 2.6vw, 1.25rem); line-height: 1.75; white-space: pre-wrap; }
+  .page-body.text-page{ font-family: Georgia, serif; font-size: clamp(1.05rem, 3vw, 1.5rem); line-height: 1.8; white-space: pre-wrap; }
   .page-body.text-page::first-letter{ font-size: 2.8rem; font-weight:700; float:left; line-height: 0.8; margin: 5px 6px 0 0; color: var(--blue); }
 
   .polaroid{
@@ -433,6 +484,13 @@
     box-shadow: 0 18px 36px rgba(0,0,0,0.28);
     max-width: 82%;
   }
+  .sticker{
+    float: left;
+    width: var(--sticker-size, 120px);
+    margin: 4px 20px 12px 0;
+  }
+  .sticker.float-right{ float: right; margin: 4px 0 12px 20px; }
+  .sticker .polaroid{ max-width: none; width: 100%; }
   .polaroid img{ display:block; width:100%; aspect-ratio: 4/5; object-fit: cover; background: linear-gradient(160deg,#dfe7f7,#c9d6f0); }
   .polaroid .cap{
     font-family: "Comic Sans MS", "Segoe Print", cursive;
@@ -466,8 +524,8 @@
 
 
   /* ================= CAKE (pseudo-3D) ================= */
-  .cake-wrap{ display:flex; flex-direction:column; align-items:center; gap: 14px; }
-  .cake{ position: relative; width: 390px; height: 340px; }
+  .cake-wrap{ display:flex; flex-direction:column; align-items:center; gap: 30px; }   /* was 14px */
+  .cake{ position: relative; width: 390px; height: 420px; }
   .cake-shadow{
     position:absolute; bottom:-6px; left:50%; transform:translateX(-50%);
     width: 335px; height: 40px; border-radius: 50%;
@@ -475,9 +533,9 @@
     filter: blur(3px);
   }
   .plate{
-    position:absolute; bottom:15px; left:50%; transform:translateX(-50%) rotateX(70deg);
-    width: 350px; height: 350px; border-radius: 50%;
-    background: radial-gradient(closest-side, rgba(255,255,255,0.4), rgba(255,255,255,0.08) 70%, transparent 74%);
+    position:absolute; bottom:6px; left:50%; transform:translateX(-50%);
+    width: 320px; height: 56px; border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(255,255,255,0.45), rgba(255,255,255,0.08) 70%, transparent 74%);
     box-shadow: 0 3px 14px rgba(0,0,0,0.3);
   }
 
@@ -489,18 +547,18 @@
   .tier-face{
     position:absolute; left:0; right:0; border-radius: 50%;
   }
-  .tier-bottom{ width: 332px; bottom: 31px; }
-  .tier-bottom .tier-body{ height: 105px; background: linear-gradient(90deg, #0f2a5e 0%, #1c3a7a 16%, #6ea8ff 48%, #a8c8ff 52%, #1c3a7a 84%, #0f2a5e 100%); }
-  .tier-bottom .tier-face{ height: 37px; top: -19px; background: radial-gradient(ellipse at 50% 35%, #cfe0ff, #6ea8ff 65%, #3a5fa8 100%); }
+  .tier-bottom{ width: 332px; bottom: 40px; }
+  .tier-bottom .tier-body{ height: 110px; background: linear-gradient(90deg, #0f2a5e 0%, #1c3a7a 16%, #6ea8ff 48%, #a8c8ff 52%, #1c3a7a 84%, #0f2a5e 100%); }
+  .tier-bottom .tier-face{ height: 38px; top: -19px; background: radial-gradient(ellipse at 50% 35%, #cfe0ff, #6ea8ff 65%, #3a5fa8 100%); }
 
-  .tier-top{ width: 232px; bottom: 121px; }
-  .tier-top .tier-body{ height: 87px; background: linear-gradient(90deg, #3a5fa8 0%, #6ea8ff 16%, #d8e7ff 48%, #eef4ff 52%, #6ea8ff 84%, #3a5fa8 100%); }
-  .tier-top .tier-face{ height: 31px; top: -16px; background: radial-gradient(ellipse at 50% 35%, #fffef8, #f0e6c8 65%, #cbb98f 100%); }
+  .tier-top{ width: 232px; bottom: 150px; }                    /* 40 + 110 = 150, sits exactly on tier-bottom's top */
+  .tier-top .tier-body{ height: 88px; background: linear-gradient(90deg, #3a5fa8 0%, #6ea8ff 16%, #d8e7ff 48%, #eef4ff 52%, #6ea8ff 84%, #3a5fa8 100%); }
+  .tier-top .tier-face{ height: 32px; top: -16px; background: radial-gradient(ellipse at 50% 35%, #fffef8, #f0e6c8 65%, #cbb98f 100%); }
 
   .frosting-drip{ position:absolute; width:19px; height:31px; background: var(--cream); border-radius: 0 0 15px 15px; box-shadow: inset -4px 0 6px rgba(0,0,0,0.08); }
   .sprinkle{ position:absolute; width:8px; height:8px; border-radius:3px; }
 
-  .candle-mini{ position:absolute; bottom: 217px; left:50%; transform:translateX(-50%); width: 14px; height: 68px; z-index: 3; }
+  .candle-mini{ position:absolute; bottom: 232px; left:50%; transform:translateX(-50%); width: 14px; height: 70px; z-index: 3; }
   .candle-mini .stick{
     position:absolute; bottom:0; width:100%; height:100%; border-radius:4px;
     background: repeating-linear-gradient(90deg, var(--gold) 0 5px, var(--cream) 5px 10px);
@@ -560,7 +618,8 @@
 
 
   .mic-frame{
-    display:flex; flex-direction:column; align-items:center; gap: 12px; margin-top: 18px;
+    display:flex; flex-direction:column; align-items:center; gap: 12px; margin-top: 8px;
+    position: relative; z-index: 5;                                                    /* new */
   }
   .mic-meter{ width: 280px; height: 10px; border-radius:999px; background: rgba(251,245,234,0.15); overflow:hidden; }
   .mic-meter-fill{ height:100%; width:0%; background: linear-gradient(90deg, var(--sky), var(--gold)); }
@@ -681,8 +740,6 @@
           <div class="page-edges"></div>
           <div class="ribbon"></div>
           <div class="book-stage" id="bookStage"></div>
-          <div class="tap-zone left" id="tapPrev"></div>
-          <div class="tap-zone right" id="tapNext"></div>
         </div>
         <div class="book-cover" id="bookCover">
           <div class="seal">💌</div>
@@ -690,10 +747,6 @@
           <div class="tap-note">tap to open</div>
         </div>
       </div>
-      <div class="book-controls" id="bookControls" style="display:none;">
-        <button id="pagePrev" aria-label="Previous page">‹</button>
-        <div class="book-indicator" id="pageIndicator">1 / 8</div>
-        <button id="pageNext" aria-label="Next page">›</button>
       </div>
     </div>
   </section>
@@ -769,15 +822,21 @@ const CONFIG = {
   // The book is one continuous flow — mix "text" pages and "photo" pages
   // in whatever order feels right. Leave a photo's src empty to show a
   // placeholder until you add the real file.
-  bookPages: [
-    { type: "text", text: "My dearest Babe/Baby/Asawa ko/Bestfriend/lahat na since ikaw naman ang 'lahat' sa buhay ko eh. First of all, I love youuuuu very much. I know na gusto mo ng ganto sa iyong Birthday. Pero ginawa ko ito not just because \"gusto\" mo, its because I want you to feel that this day is a very special day to you. I made this not just to greet you a Happy Birthday, I also want to utilize this to show you how much I love you." },
-    { type: "photo", src: "src/fav_photo.jpg", caption: "I always love that adorable smile of yours" },
-    { type: "text", text: "I will never get tired of saying that you are the best blessing that I've received in my life. You changed me for the better. And when there are times that I am lost, you are always there to guide me back to the correct path." },
-    { type: "photo", src: "src/together.jpg", caption: "One of our best days together" },
-    { type: "photo", src: "src/somwhere.jpg", caption: "Times where we just want peace together" },
-    { type: "text", text: "You and I have been through so much, and I know that there are still more challenges to come. Even if that's the case, I will still never stop loving you." },
-    { type: "photo", src: "src/smile.jpg", caption: "You always makes me smile when I see you" },
-    { type: "text", text: "I will ensure that each birthdays will be special. I love youuuuuuuuu so much.\n\n-Your baby boy" }
+  letter: `My dearest Babe/Baby/Asawa ko/Bestfriend/lahat na since ikaw naman ang 'lahat' sa buhay ko eh. First of all, I love youuuuu very much...
+
+  I will never get tired of saying that you are the best blessing that I've received in my life...
+
+  You and I have been through so much, and I know that there are still more challenges to come...
+
+  I will ensure that each birthdays will be special. I love youuuuuuuuu so much.
+
+  -Your baby boy`,
+
+  stickers: [
+    { src: "src/fav_photo.jpg", caption: "That smile", rotate: -6, size: 128, float: "right" },
+    { src: "src/together.jpg", caption: "One of our best days", rotate: 4,  size: 120, float: "left"  },
+    { src: "src/somwhere.jpg", caption: "Just us, at peace", rotate: -4, size: 116, float: "right" },
+    { src: "src/smile.jpg",    caption: "You, always",        rotate: 5,  size: 124, float: "left"  }
   ],
 
   wishText: "Whatever you wished for — I hope it comes true. And if it doesn't, as long as I'm here, I'll make sure that it comes true."
@@ -943,118 +1002,71 @@ document.getElementById('leftSince').textContent = "since " + new Date(CONFIG.si
 (function setupBook(){
   const cover = document.getElementById('bookCover');
   const stage = document.getElementById('bookStage');
-  const controls = document.getElementById('bookControls');
-  const prevBtn = document.getElementById('pagePrev');
-  const nextBtn = document.getElementById('pageNext');
-  const indicator = document.getElementById('pageIndicator');
-  const tapPrev = document.getElementById('tapPrev');
-  const tapNext = document.getElementById('tapNext');
-  const total = CONFIG.bookPages.length;
-  const TURN_MS = 750;
-  let current = 0; // index of the topmost, currently-visible (unturned) leaf
+
   let opened = false;
 
-  const todayLabel = new Date().toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+  // Build one page: paragraphs + interleaved stickers
+  const paragraphs = CONFIG.letter.split(/\n\s*\n/);
+  const leaf = document.createElement('div');
+  leaf.className = 'leaf';
+  const front = document.createElement('div');
+  front.className = 'leaf-face leaf-front';
+  front.innerHTML = `
+    <button class="leaf-close" id="leafClose" aria-label="Close letter">✕</button>
+    <div class="page-body text-page" id="letterBody"></div>`;
+  leaf.appendChild(front);
+  stage.appendChild(leaf);
 
-  const leaves = CONFIG.bookPages.map((p, i) => {
-    const leaf = document.createElement('div');
-    leaf.className = 'leaf';
-
-    const front = document.createElement('div');
-    front.className = 'leaf-face leaf-front';
-
-    if (p.type === 'photo') {
-      const rotate = (i % 2 === 0 ? -3 : 2);
-      front.innerHTML = `
-        <div class="page-meta"><span>${CONFIG.herName}</span><span>${i + 1} / ${total}</span></div>
-        <div class="page-body">
-          <div class="polaroid" style="transform: rotate(${rotate}deg);">
-            <span class="tape tl"></span><span class="tape tr"></span>
-            ${p.src ? `<img src="${p.src}" alt="${p.caption || ''}">` : `<div class="placeholder-ph">📷</div>`}
-            <div class="cap">${p.caption || ''}</div>
-          </div>
+  const body = front.querySelector('#letterBody');
+  let stickerIdx = 0;
+  paragraphs.forEach((para, i) => {
+    // Drop in a sticker every couple of paragraphs
+    if (stickerIdx < CONFIG.stickers.length && i > 0 && i % 2 === 0) {
+      const s = CONFIG.stickers[stickerIdx++];
+      const div = document.createElement('div');
+      div.className = `sticker ${s.float === 'right' ? 'float-right' : ''}`;
+      div.style.setProperty('--sticker-size', s.size + 'px');
+      div.innerHTML = `
+        <div class="polaroid" style="transform: rotate(${s.rotate}deg);">
+          <span class="tape tl"></span><span class="tape tr"></span>
+          ${s.src ? `<img src="${s.src}" alt="${s.caption||''}">` : `<div class="placeholder-ph">📷</div>`}
+          <div class="cap">${s.caption || ''}</div>
         </div>`;
-    } else {
-      front.innerHTML = `
-        <div class="page-meta"><span>${i === 0 ? todayLabel : ''}</span><span>${i + 1} / ${total}</span></div>
-        <div class="page-body text-page"></div>`;
-      // set via textContent to avoid HTML-escaping issues with the letter text
-      requestAnimationFrame(() => {
-        front.querySelector('.text-page').textContent = p.text;
-      });
+      body.appendChild(div);
     }
-
-    const back = document.createElement('div');
-    back.className = 'leaf-face leaf-back';
-
-    leaf.appendChild(front);
-    leaf.appendChild(back);
-    stage.appendChild(leaf);
-    return leaf;
+    const p = document.createElement('p');
+    p.textContent = para;
+    body.appendChild(p);
   });
-
-  function layout(){
-    leaves.forEach((leaf, i) => {
-      const isTurned = i < current;
-      leaf.style.transform = isTurned ? 'rotateY(-180deg)' : 'rotateY(0deg)';
-      leaf.style.zIndex = isTurned ? String(i - total) : String(total - i);
-    });
-    indicator.textContent = `${current + 1} / ${total}`;
-    prevBtn.disabled = current === 0;
-    nextBtn.disabled = current === total - 1;
+  // Any leftover stickers just get appended at the end
+  while (stickerIdx < CONFIG.stickers.length) {
+    const s = CONFIG.stickers[stickerIdx++];
+    const div = document.createElement('div');
+    div.className = `sticker ${s.float === 'right' ? 'float-right' : ''}`;
+    div.style.setProperty('--sticker-size', s.size + 'px');
+    div.innerHTML = `<div class="polaroid" style="transform: rotate(${s.rotate}deg);">
+      <span class="tape tl"></span><span class="tape tr"></span>
+      ${s.src ? `<img src="${s.src}" alt="${s.caption||''}">` : `<div class="placeholder-ph">📷</div>`}
+      <div class="cap">${s.caption || ''}</div></div>`;
+    body.appendChild(div);
   }
 
-  function next(){
-    if (!opened || current >= total - 1) return;
-    const i = current;
-    current++;
-    leaves[i].classList.add('turning');
-    leaves[i].style.transform = 'rotateY(-180deg)';
-    setTimeout(() => {
-      leaves[i].style.zIndex = String(i - total);
-      leaves[i].classList.remove('turning');
-    }, TURN_MS);
-    indicator.textContent = `${current + 1} / ${total}`;
-    prevBtn.disabled = false;
-    nextBtn.disabled = current === total - 1;
-  }
-
-  function prev(){
-    if (!opened || current <= 0) return;
-    current--;
-    const i = current;
-    leaves[i].style.zIndex = String(total - i);
-    leaves[i].classList.add('turning');
-    leaves[i].style.transform = 'rotateY(0deg)';
-    setTimeout(() => { leaves[i].classList.remove('turning'); }, TURN_MS);
-    indicator.textContent = `${current + 1} / ${total}`;
-    nextBtn.disabled = false;
-    prevBtn.disabled = current === 0;
-  }
-
-  cover.addEventListener('click', () => {
+  function openLetter(){
     opened = true;
+    cover.classList.remove('closing');
     cover.classList.add('open');
-    stage.classList.add('show');
-    controls.style.display = 'flex';
-    layout();
-  });
+    setTimeout(() => stage.classList.add('show'), 900); // wait for the slow open
+  }
+  function closeLetter(){
+    opened = false;
+    stage.classList.remove('show');
+    cover.classList.remove('open');
+    cover.classList.add('closing');
+    setTimeout(() => cover.classList.remove('closing'), 900);
+  }
 
-  prevBtn.addEventListener('click', prev);
-  nextBtn.addEventListener('click', next);
-  tapPrev.addEventListener('click', prev);
-  tapNext.addEventListener('click', next);
-
-  let touchStartX = null;
-  stage.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-  stage.addEventListener('touchend', e => {
-    if (touchStartX === null) return;
-    const dx = e.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(dx) > 40) {
-      if (dx < 0) next(); else prev();
-    }
-    touchStartX = null;
-  }, { passive: true });
+  cover.addEventListener('click', () => { if (!opened) openLetter(); });
+  front.querySelector('#leafClose').addEventListener('click', closeLetter);
 })();
 
 /* ---------- Cake: sprinkles + drips ---------- */
@@ -1065,7 +1077,7 @@ document.getElementById('leftSince').textContent = "since " + new Date(CONFIG.si
     const s = document.createElement('div');
     s.className = 'sprinkle';
     s.style.background = colors[i % colors.length];
-    s.style.bottom = (121 + Math.random() * 68) + 'px';
+    s.style.bottom = (150 + Math.random() * 88) + 'px';       // was 121 + rand*68
     s.style.left = (194 + (Math.random() * 202 - 101)) + 'px';
     s.style.transform = `rotate(${Math.random() * 360}deg)`;
     cake.appendChild(s);
@@ -1073,7 +1085,7 @@ document.getElementById('leftSince').textContent = "since " + new Date(CONFIG.si
   [148, 194, 240].forEach(left => {
     const d = document.createElement('div');
     d.className = 'frosting-drip';
-    d.style.bottom = '192px';
+    d.style.bottom = '150px';                                   // was 192px — seam between tiers
     d.style.left = left + 'px';
     cake.appendChild(d);
   });
