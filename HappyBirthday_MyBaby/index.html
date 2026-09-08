@@ -1116,13 +1116,13 @@ document.getElementById('leftSince').textContent = "since " + new Date(CONFIG.si
   }
 
   // a full ring of drips around the seam between the two tiers, not just 3 fixed ones
-  const dripCount = 14;
+  const dripCount = 23;
   const tierTopLeft = 79;   // (390 - 232) / 2
   const tierTopWidth = 232;
   for (let i = 0; i < dripCount; i++) {
     const d = document.createElement('div');
     d.className = 'frosting-drip';
-    d.style.bottom = (118 + Math.random() * 10) + 'px';
+    d.style.bottom = (112 + Math.random() * 10) + 'px';
     d.style.left = (tierTopLeft + 20 + (i * (tierTopWidth - 40) / (dripCount - 1))) + 'px';
     d.style.height = (26 + Math.random() * 10) + 'px';
     cake.appendChild(d);
